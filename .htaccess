@@ -1,0 +1,50 @@
+# Redirections permanentes depuis l'ancien site.
+# Généré par build/make.py — ne pas modifier à la main,
+# la source est content/redirections.py
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^index.htm$ / [R=301,L]
+  RewriteRule ^le-gite.htm$ /#maison [R=301,L]
+  RewriteRule ^gite-de-groupe-pres-de-la-frontiere-suisse.htm$ /#maison [R=301,L]
+  RewriteRule ^les-chambres.htm$ /#chambres [R=301,L]
+  RewriteRule ^chambre-personne-a-mobilite-reduite.htm$ /#chambres [R=301,L]
+  RewriteRule ^visite-virtuelle.htm$ /#galerie [R=301,L]
+  RewriteRule ^tarifs-disponibilites.htm$ /#tarifs [R=301,L]
+  RewriteRule ^activites.htm$ /#jura [R=301,L]
+  RewriteRule ^tourisme.htm$ /#jura [R=301,L]
+  RewriteRule ^actualites.htm$ /#maison [R=301,L]
+  RewriteRule ^contact-acces.htm$ /#contact [R=301,L]
+  RewriteRule ^mentions-legales.htm$ /mentions-legales.html [R=301,L]
+  RewriteRule ^en/index.htm$ / [R=301,L]
+  RewriteRule ^en/accueil-partie-5.htm$ / [R=301,L]
+  RewriteRule ^en/the-house.htm$ /#maison [R=301,L]
+  RewriteRule ^en/the-rooms.htm$ /#chambres [R=301,L]
+  RewriteRule ^en/rates-calendar.htm$ /#tarifs [R=301,L]
+  RewriteRule ^en/activities.htm$ /#jura [R=301,L]
+  RewriteRule ^en/tourism.htm$ /#jura [R=301,L]
+  RewriteRule ^en/contact-access.htm$ /#contact [R=301,L]
+  RewriteRule ^en/legal-notice.htm$ /mentions-legales.html [R=301,L]
+  RewriteRule ^de/index.htm$ / [R=301,L]
+  RewriteRule ^de/das-haus.htm$ /#maison [R=301,L]
+  RewriteRule ^de/die-raume.htm$ /#chambres [R=301,L]
+  RewriteRule ^de/preise-kalendar.htm$ /#tarifs [R=301,L]
+  RewriteRule ^de/aktivitaten.htm$ /#jura [R=301,L]
+  RewriteRule ^de/tourismus.htm$ /#jura [R=301,L]
+  RewriteRule ^de/kontakt-hinkommen.htm$ /#contact [R=301,L]
+  RewriteRule ^de/impressum.htm$ /mentions-legales.html [R=301,L]
+</IfModule>
+
+ErrorDocument 404 /index.html
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+</IfModule>

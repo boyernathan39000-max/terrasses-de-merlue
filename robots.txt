@@ -1,0 +1,3 @@
+# Aperçu de travail. Le site en production est sur www.grandgite-jura.com
+User-agent: *
+Disallow: /
