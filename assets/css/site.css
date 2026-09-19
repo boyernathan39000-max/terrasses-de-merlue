@@ -95,16 +95,13 @@ img{ height: auto; }
    <picture> étant un conteneur sans dimensions propres, les règles de
    couverture posées sur <img> seul ne suffisent pas. */
 .hero-media picture, .quote-media picture,
-.feature-img picture, .feature-pair > * picture,
 .duo-media picture, .mosaic button picture{
   display: block; position: absolute; inset: 0;
 }
 .hero-media img, .quote-media img,
-.feature-img img, .feature-pair img,
 .duo-media img, .mosaic img{
   width: 100%; height: 100%; object-fit: cover;
 }
-.feature-pair > *{ position: relative; }
 
 a{ color: inherit; text-decoration: none; }
 
@@ -430,15 +427,15 @@ body.is-curtained{ overflow: hidden; }
 
 /* Les images gardent leur fond d'attente neutre, pas la teinte de la bande */
 .band-brown .duo-media, .band-green .duo-media,
-.band-brown .feature-img, .band-green .feature-img,
+.band-brown .trio-img, .band-green .trio-img,
 .band-brown .room-thumb, .band-green .room-thumb,
 .band-brown .carousel, .band-green .carousel,
 .band-brown .mosaic button, .band-green .mosaic button{ background: rgba(255,255,255,.08); }
 
 /* La tuile de titre, elle, se démarque par un simple voile clair */
-.band-brown .feature-tile, .band-green .feature-tile{ background: rgba(255,255,255,.09); }
+.band-brown .band-tile, .band-green .band-tile{ background: rgba(255,255,255,.09); }
 /* Les cases qui portent le titre de section se détachent en vert */
-.band-brown .feature-tile.is-sage,
+.band-brown .band-tile.is-sage,
 .band-brown .around-tile{ background: var(--green-bg); }
 
 /* Les jours occupés du calendrier restent lisibles */
@@ -520,42 +517,38 @@ body.is-curtained{ overflow: hidden; }
 @media (max-width: 460px){ .facts{ grid-template-columns: repeat(2, 1fr); } }
 
 /* ------------------------------------------------------------ 9. Blocs */
-/* Le motif de référence : un carré de couleur portant le titre, posé dans
-   une composition d'images. */
-.feature{
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(14px, 1.8vw, 24px);
-  align-items: center;
+/* Le motif de référence : un bandeau de titre pleine largeur — sur-titre
+   au-dessus du titre — puis des rangs de trois cellules où images et blocs
+   de texte alternent de place d'un rang à l'autre. */
+.band-tile{
+  border-radius: var(--soft);
+  padding: clamp(22px, 2.6vw, 34px) clamp(24px, 3vw, 40px);
+  display: flex; flex-direction: column; gap: 4px;
 }
-.feature-tile{
-  grid-column: span 4; aspect-ratio: 2/1;
-  border-radius: var(--soft); padding: clamp(24px, 3vw, 38px);
-  display: flex; flex-direction: column; justify-content: flex-end; gap: 12px;
+.band-tile.is-sage{ background: var(--sage-bg); }
+.band-tile.is-clay{ background: var(--clay-bg); }
+.band-tile h2{ color: var(--ink); }
+.band-tile .note{ margin-top: 8px; max-width: 64ch; }
+
+.trio{
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(14px, 1.8vw, 24px); align-items: center;
 }
-.feature-tile.is-sage{ background: var(--sage-bg); }
-.feature-tile.is-clay{ background: var(--clay-bg); }
-.feature-tile.is-lake{ background: var(--lake-bg); }
-.feature-tile h2{ color: var(--ink); }
-
-.feature-img{ grid-column: span 8; border-radius: var(--soft); overflow: hidden; position: relative; aspect-ratio: 2/1; background: var(--cream); }
-.feature-img img{ width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
-.feature-img:hover img{ transform: scale(1.03); }
-
-.feature-text{ grid-column: span 5; }
-.feature-pair{ grid-column: span 7; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 1.8vw, 24px); }
-.feature-pair > *{ border-radius: var(--soft); overflow: hidden; aspect-ratio: 4/3; background: var(--cream); }
-.feature-pair img{ width: 100%; height: 100%; object-fit: cover; }
+.trio-img{
+  border-radius: var(--soft); overflow: hidden; position: relative;
+  aspect-ratio: 4/3; background: var(--cream);
+}
+.trio-img picture{ position: absolute; inset: 0; }
+.trio-img img{ width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
+.trio-img:hover img{ transform: scale(1.03); }
 
 @media (max-width: 900px){
-  .feature-tile{ grid-column: span 12; aspect-ratio: 2/1; }
-  .feature-img, .feature-text, .feature-pair{ grid-column: span 12; }
-  .feature-img{ aspect-ratio: 16/10; }
+  .trio{ grid-template-columns: 1fr 1fr; }
+  .trio-text{ grid-column: span 2; }
 }
-@media (max-width: 520px){
-  .feature-tile{ aspect-ratio: auto; min-height: 180px; }
-  .feature-pair{ grid-template-columns: 1fr; }
-  .feature-pair > *{ aspect-ratio: 4/3; }
+@media (max-width: 560px){
+  .trio{ grid-template-columns: 1fr; }
+  .trio-text{ grid-column: auto; }
 }
 
 /* Deux colonnes simples */
@@ -583,14 +576,6 @@ body.is-curtained{ overflow: hidden; }
   font-size: .85rem; color: var(--ink-70);
 }
 .band-sage .chip{ background: rgba(255,255,255,.7); border-color: transparent; }
-
-/* Bande de quatre images */
-.strip{
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: clamp(14px, 1.8vw, 24px); align-items: start;
-}
-.strip .duo-media{ aspect-ratio: 4/3; }
-@media (max-width: 860px){ .strip{ grid-template-columns: repeat(2, 1fr); } }
 
 /* --------------------------------------------------------- 10. Galeries */
 .mosaic{ display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(8px, 1vw, 12px); }
