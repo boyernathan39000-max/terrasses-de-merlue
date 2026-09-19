@@ -567,11 +567,14 @@ body.is-curtained{ overflow: hidden; }
 }
 .points.is-clay li::before{ background: var(--clay); }
 
-/* Puces d'équipement, très compactes */
-.chips{ display: flex; flex-wrap: wrap; gap: 9px; }
+/* Puces d'équipement. Quatre par rang, à largeur égale : les huit pastilles
+   forment deux rangs pleins et tiennent toute la largeur de la section,
+   plutôt qu'un pavé irrégulier qui s'arrêtait au milieu du second rang. */
+.chips{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+@media (max-width: 700px){ .chips{ grid-template-columns: repeat(2, 1fr); } }
 .chip{
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 9px 17px; border-radius: var(--round);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 17px; border-radius: var(--round); text-align: center;
   background: var(--cream); border: 1px solid var(--line);
   font-size: .85rem; color: var(--ink-70);
 }
