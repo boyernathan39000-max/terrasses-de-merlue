@@ -44,6 +44,10 @@
   --gold:      #E0B155;
 
   --line:      #EAE7E1;
+
+  /* Matière des bandes sombres — voir la section 6. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.05'/%3E%3C/svg%3E");
+  --profondeur: linear-gradient(180deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,0) 38%, rgba(0,0,0,.06) 100%);
   --line-soft: #F2F0EC;
   --line-dark: rgba(255,255,255,.2);
 
@@ -402,8 +406,19 @@ body.is-curtained{ overflow: hidden; }
   --lake-bg: rgba(255,255,255,.10);
   color: #FFFFFF;
 }
-.band-brown{ background: var(--brown-bg); --sage: #D7B79A; --sage-deep: #E8CFB8; --clay: #E0A97C; --clay-deep: #EDC3A0; }
-.band-green{ background: var(--green-bg); --sage: #A8C6AC; --sage-deep: #C6DCC8; --clay: #DCAF86; --clay-deep: #E9C7A6; }
+/* Un aplat de cette taille se lit comme un bloc imprimé. Deux couches très
+   discrètes lui rendent de la matière : un grain de papier — bruit fractal
+   désaturé, en SVG intégré, aucun fichier ni requête de plus — et un dégradé
+   vertical qui éclaire le haut et assombrit le bas. Les deux sont volontairement
+   à la limite du visible : au-delà, on ajoute du bruit là où les photographies
+   doivent parler seules. */
+.band-brown, .band-green{
+  background-image: var(--grain), var(--profondeur);
+  background-repeat: repeat, no-repeat;
+  background-size: 160px 160px, 100% 100%;
+}
+.band-brown{ background-color: var(--brown-bg); --sage: #D7B79A; --sage-deep: #E8CFB8; --clay: #E0A97C; --clay-deep: #EDC3A0; }
+.band-green{ background-color: var(--green-bg); --sage: #A8C6AC; --sage-deep: #C6DCC8; --clay: #DCAF86; --clay-deep: #E9C7A6; }
 
 /* Contact : les accents virent au marron, pour trancher avec le fond vert */
 #contact .eyebrow{ color: var(--clay); }
@@ -435,7 +450,6 @@ body.is-curtained{ overflow: hidden; }
 /* La tuile de titre, elle, se démarque par un simple voile clair */
 .band-brown .band-tile, .band-green .band-tile{ background: rgba(255,255,255,.09); }
 /* Les cases qui portent le titre de section se détachent en vert */
-.band-brown .band-tile.is-sage,
 .band-brown .around-tile{ background: var(--green-bg); }
 
 /* Les jours occupés du calendrier restent lisibles */
@@ -525,8 +539,18 @@ body.is-curtained{ overflow: hidden; }
   padding: clamp(22px, 2.6vw, 34px) clamp(24px, 3vw, 40px);
   display: flex; flex-direction: column; gap: 4px;
 }
-.band-tile.is-sage{ background: var(--sage-bg); }
-.band-tile.is-clay{ background: var(--clay-bg); }
+/* Le vert de la case ne dépend plus de la bande qui la porte : elle
+   redéfinit les jetons dans sa propre portée, comme les bandes sombres.
+   Sur-titre et titre suivent tout seuls, sur fond clair comme sur fond
+   sombre. */
+.band-tile.is-green{
+  background: var(--green-bg);
+  --ink: #FFFFFF;
+  --ink-70: rgba(255,255,255,.80);
+  --ink-45: rgba(255,255,255,.58);
+  --sage-deep: #C6DCC8;
+  color: #FFFFFF;
+}
 .band-tile h2{ color: var(--ink); }
 .band-tile .note{ margin-top: 8px; max-width: 64ch; }
 
@@ -593,6 +617,7 @@ body.is-curtained{ overflow: hidden; }
   .chips{ grid-template-columns: repeat(2, 1fr); }
 }
 .band-sage .chip{ background: rgba(255,255,255,.7); border-color: transparent; }
+.band-cream .chip{ background: var(--white); }
 
 /* --------------------------------------------------------- 10. Galeries */
 .mosaic{ display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(8px, 1vw, 12px); }
