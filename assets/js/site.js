@@ -66,7 +66,7 @@
   }
 
   /* ------------------------------------------------ bandeau : le relais */
-  /* Trois vues empilées, six secondes chacune, en fondu. Le fondu lui-même
+  /* Trois vues empilées, trois secondes chacune, en fondu. Le fondu lui-même
      est dans la feuille de style : ici on ne fait que déplacer la classe.
 
      Deux précautions : on ne démarre qu'une fois le rideau parti, et on met
@@ -82,7 +82,7 @@
       slides[slide].classList.add("is-on");
     };
     var runSlides = function () {
-      if (!timer) timer = setInterval(nextSlide, 6000);
+      if (!timer) timer = setInterval(nextSlide, 3000);
     };
     var haltSlides = function () {
       clearInterval(timer);
