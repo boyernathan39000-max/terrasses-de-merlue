@@ -47,6 +47,7 @@
 
   /* Matière des bandes sombres — voir la section 6. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.05'/%3E%3C/svg%3E");
+  --roseaux: url("data:image/svg+xml,<svg opacity='.08' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 620'><g fill='%23FFFFFF'><path d='M148 620 C140 470 152 344 198 236 C212 204 230 168 244 144 C234 176 222 212 210 248 C168 374 156 492 162 620 Z'/><path d='M172 620 C176 480 166 356 140 244 C131 206 120 172 112 148 C126 178 140 216 150 254 C182 368 190 486 184 620 Z'/><path d='M198 620 C204 496 230 396 288 300 C302 276 318 254 328 240 C316 266 304 292 292 320 C240 424 222 518 220 620 Z'/><path d='M124 620 C118 518 92 432 44 358 C30 336 18 318 10 306 C24 326 40 350 54 376 C102 456 132 528 138 620 Z'/><path d='M226 620 C234 534 256 470 300 418 C314 402 326 390 334 382 C324 396 314 412 305 430 C270 490 254 550 250 620 Z'/><path d='M88 620 C84 556 68 508 38 470 C28 458 20 450 14 444 C24 456 33 470 41 486 C64 526 78 570 82 620 Z'/></g><g stroke='%23FFFFFF' fill='none' stroke-linecap='round'><path d='M168 620 C166 486 164 378 164 278' stroke-width='4.6'/><path d='M212 620 C216 512 222 424 226 344' stroke-width='4.2'/><path d='M164 176 C164 156 163 142 162 130' stroke-width='2.4'/><path d='M226 246 C227 228 227 216 227 206' stroke-width='2.1'/></g><g fill='%23FFFFFF'><rect x='155.5' y='178' width='17' height='102' rx='8.5'/><rect x='218' y='248' width='15.5' height='90' rx='7.75'/></g></svg>");
   --profondeur: linear-gradient(180deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,0) 38%, rgba(0,0,0,.06) 100%);
   --line-soft: #F2F0EC;
   --line-dark: rgba(255,255,255,.2);
@@ -413,9 +414,17 @@ body.is-curtained{ overflow: hidden; }
    à la limite du visible : au-delà, on ajoute du bruit là où les photographies
    doivent parler seules. */
 .band-brown, .band-green{
-  background-image: var(--grain), var(--profondeur);
-  background-repeat: repeat, no-repeat;
-  background-size: 160px 160px, 100% 100%;
+  background-image: var(--grain), var(--roseaux), var(--profondeur);
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: 160px 160px, auto 420px, 100% 100%;
+}
+/* Les roseaux se posent en bas, débordant du bord, et changent de côté d'une
+   bande à l'autre — la page alterne vert, brun, vert, donc droite, gauche,
+   droite. Ils sont à 8 % : on les devine, on ne s'y accroche pas. */
+.band-green{ background-position: 0 0, right -26px bottom, 0 0; }
+.band-brown{ background-position: 0 0, left -34px bottom, 0 0; }
+@media (max-width: 760px){
+  .band-brown, .band-green{ background-size: 160px 160px, auto 250px, 100% 100%; }
 }
 .band-brown{ background-color: var(--brown-bg); --sage: #D7B79A; --sage-deep: #E8CFB8; --clay: #E0A97C; --clay-deep: #EDC3A0; }
 .band-green{ background-color: var(--green-bg); --sage: #A8C6AC; --sage-deep: #C6DCC8; --clay: #DCAF86; --clay-deep: #E9C7A6; }
