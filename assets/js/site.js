@@ -312,7 +312,10 @@
     var dots = $$(".carousel-dots i", box);
 
     var current = function () {
-      return Math.round(track.scrollLeft / track.clientWidth);
+      // Dans une fiche fermée, la pellicule a une largeur nulle : sans ce
+      // garde-fou la division rendait NaN, et le compteur affichait « NaN ».
+      var w = track.clientWidth;
+      return w ? Math.round(track.scrollLeft / w) : 0;
     };
 
     // Cible en cours : sans elle, deux clics rapprochés repartiraient tous
@@ -357,6 +360,65 @@
     addEventListener("resize", function () { target = null; paint(current()); }, { passive: true });
 
     paint(0);
+  });
+
+
+  /* ------------------------------------ chambres : pont roulant et fiches */
+  /* Le pont fait défiler d'une pleine largeur : les trois colonnes visibles
+     cèdent la place aux suivantes, et le défilement s'arrête au bout. */
+  var deck = $("[data-rooms-track]");
+  if (deck) {
+    var deckPrev = $("[data-rooms-prev]");
+    var deckNext = $("[data-rooms-next]");
+
+    var deckPaint = function () {
+      var max = deck.scrollWidth - deck.clientWidth - 2;
+      if (deckPrev) deckPrev.disabled = deck.scrollLeft <= 2;
+      if (deckNext) deckNext.disabled = deck.scrollLeft >= max;
+    };
+    var deckGo = function (sens) {
+      deck.scrollBy({ left: sens * deck.clientWidth, behavior: "smooth" });
+    };
+
+    if (deckPrev) deckPrev.addEventListener("click", function () { deckGo(-1); });
+    if (deckNext) deckNext.addEventListener("click", function () { deckGo(1); });
+    deck.addEventListener("scroll", deckPaint, { passive: true });
+    addEventListener("resize", deckPaint, { passive: true });
+    deckPaint();
+  }
+
+  /* La fiche d'une chambre. <dialog> apporte la touche Échap, le piège à
+     focus et le fond assombri ; il reste à verrouiller le défilement de la
+     page derrière, que le navigateur ne bloque pas partout. */
+  $$("[data-open]").forEach(function (bouton) {
+    bouton.addEventListener("click", function () {
+      var fiche = document.getElementById(bouton.getAttribute("data-open"));
+      if (!fiche) return;
+      if (fiche.showModal) fiche.showModal();
+      else fiche.setAttribute("open", "");
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  $$("dialog.rmodal").forEach(function (fiche) {
+    // Le verrou est relâché ici et non sur l'événement « close » : celui-ci
+    // ne se déclenche pas dans tous les moteurs, même sur appel direct de
+    // close(). Toutes les sorties passent par cette fonction.
+    var fermer = function () {
+      if (fiche.close) fiche.close();
+      else fiche.removeAttribute("open");
+      document.body.style.overflow = "";
+    };
+    var croix = $("[data-close]", fiche);
+    if (croix) croix.addEventListener("click", fermer);
+    // clic sur le fond assombri : la cible est la boîte de dialogue elle-même
+    fiche.addEventListener("click", function (e) { if (e.target === fiche) fermer(); });
+    // Échap : le navigateur le fait déjà sur un <dialog> modal, mais pas les
+    // versions anciennes de Safari, et fermer deux fois ne coûte rien.
+    fiche.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" || e.key === "Esc") { e.preventDefault(); fermer(); }
+    });
+    fiche.addEventListener("close", function () { document.body.style.overflow = ""; });
   });
 
   /* ------------------------------------------------ formulaire de devis */
