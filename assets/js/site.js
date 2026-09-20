@@ -414,10 +414,13 @@
   /* La fiche d'une chambre. <dialog> apporte la touche Échap, le piège à
      focus et le fond assombri ; il reste à verrouiller le défilement de la
      page derrière, que le navigateur ne bloque pas partout. */
-  $$("[data-open]").forEach(function (bouton) {
-    bouton.addEventListener("click", function () {
-      var fiche = document.getElementById(bouton.getAttribute("data-open"));
-      if (!fiche) return;
+  /* La carte entière et son bouton portent tous deux data-open : le clic sur
+     le bouton remonte jusqu'à la carte, d'où le garde-fou — showModal() sur
+     une fiche déjà ouverte lève une erreur. */
+  $$("[data-open]").forEach(function (prise) {
+    prise.addEventListener("click", function () {
+      var fiche = document.getElementById(prise.getAttribute("data-open"));
+      if (!fiche || fiche.open) return;
       if (fiche.showModal) fiche.showModal();
       else fiche.setAttribute("open", "");
       document.body.style.overflow = "hidden";

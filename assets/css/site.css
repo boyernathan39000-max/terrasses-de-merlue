@@ -820,7 +820,7 @@ body.is-curtained{ overflow: hidden; }
 /* La carte rétablit la palette claire dans sa portée : elle est blanche,
    posée sur la bande verte qui, elle, a des jetons inversés. */
 .rcard{
-  scroll-snap-align: start;
+  scroll-snap-align: start; cursor: pointer;   /* la carte entière ouvre la fiche */
   display: flex; flex-direction: column;
   border-radius: var(--soft); overflow: hidden;
   background: #FFFFFF;
