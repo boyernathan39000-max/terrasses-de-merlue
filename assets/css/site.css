@@ -829,12 +829,15 @@ body.is-curtained{ overflow: hidden; }
   --white: #FFFFFF; --cream: #FBF9F5;
   --sage: #8AA48D; --sage-deep: #45664C;
   color: #38434C;
-  transition: transform .26s var(--ease), box-shadow .26s var(--ease);
+  transition: box-shadow .26s var(--ease);
 }
-/* Trois classes, pour passer devant « .js .reveal.is-in » qui pose
-   transform:none et se trouve plus bas dans la feuille : à spécificité
-   égale, c'est elle qui gagnait et le survol ne soulevait rien. */
-.rooms-grid .rcard.reveal:hover{ transform: translateY(-3px); box-shadow: 0 18px 38px -22px rgba(0,0,0,.6); }
+/* La carte ne se soulève pas au survol, et c'est voulu. Un transform la
+   promeut en calque : le calque se cale sur des pixels entiers alors que les
+   colonnes tombent sur des fractions (448,328 px, 836,656 px…), si bien qu'un
+   liseré du fond blanc de la carte apparaissait le long de la photo — sur les
+   colonnes fractionnaires seulement, d'où le « parfois ». Seule l'image bouge,
+   comme sur les cases d'activités. */
+.rooms-grid .rcard:hover{ box-shadow: 0 18px 38px -22px rgba(0,0,0,.6); }
 .rcard-media{ position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--cream); }
 .rcard-media picture{ position: absolute; inset: 0; }
 .rcard-media img{ width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
