@@ -1091,15 +1091,19 @@ body.is-curtained{ overflow: hidden; }
 
 
 /* --------------------------------------------------------- 12f. Services */
-/* Trois cases blanches sur la teinte sauge : compris, en option, conditions.
-   Elles s'étirent à la même hauteur pour que les notes de bas de case et le
-   lien s'alignent d'une colonne à l'autre. */
+/* Deux cases blanches sur la teinte sauge : ce qui est compris, ce qui
+   s'ajoute. Elles s'étirent à la même hauteur pour que les notes de bas de
+   case s'alignent d'une colonne à l'autre.
+   La paire est bornée : sur toute la largeur de la coquille, une case ferait
+   plus de quatre-vingts signes par ligne — au-delà de ce qui se lit d'un
+   trait. L'appel au devis descend dessous, centré comme le titre. */
 .svcs{
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(14px, 1.8vw, 22px);
+  max-width: 880px; margin-inline: auto; width: 100%;
 }
-@media (max-width: 1000px){ .svcs{ grid-template-columns: 1fr 1fr; } }
 @media (max-width: 680px){ .svcs{ grid-template-columns: 1fr; } }
+.svcs-more{ display: flex; justify-content: center; }
 
 .svc{
   background: var(--white); border-radius: var(--soft);
