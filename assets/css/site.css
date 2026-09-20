@@ -835,7 +835,7 @@ body.is-curtained{ overflow: hidden; }
    transform:none et se trouve plus bas dans la feuille : à spécificité
    égale, c'est elle qui gagnait et le survol ne soulevait rien. */
 .rooms-grid .rcard.reveal:hover{ transform: translateY(-3px); box-shadow: 0 18px 38px -22px rgba(0,0,0,.6); }
-.rcard-media{ position: relative; aspect-ratio: 4/3; background: var(--cream); }
+.rcard-media{ position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--cream); }
 .rcard-media picture{ position: absolute; inset: 0; }
 .rcard-media img{ width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
 .rcard:hover .rcard-media img{ transform: scale(1.04); }
@@ -858,23 +858,33 @@ body.is-curtained{ overflow: hidden; }
 }
 .rcard-more:hover{ background: var(--brown-bg); }
 
-.rooms-arrow{
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 46px; height: 46px; border-radius: 50%; border: 0;
-  background: #FFFFFF; color: var(--brown-bg);
-  display: grid; place-items: center; cursor: pointer; z-index: 2;
-  box-shadow: 0 3px 14px rgba(20,26,30,.35);
-  transition: background .2s var(--ease), color .2s var(--ease),
-              transform .2s var(--ease), opacity .2s var(--ease);
+/* La commande du pont, dans le bandeau de titre, à droite. Posée sur le pont
+   elle se perdait : une pastille blanche dont un quart couvrait le coin blanc
+   d'une fiche, à mi-hauteur entre les deux rangs, et sa jumelle effacée
+   (opacity:0) tant qu'on n'avait pas défilé — on ne voyait plus de commande
+   du tout. Ici les deux boutons sont toujours au même endroit, et celui qui
+   ne sert pas s'éteint sans disparaître : la paire dit qu'il y a une suite. */
+.rooms-top{
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 18px 28px; flex-wrap: wrap;
 }
-.rooms-arrow:hover{ background: var(--brown-bg); color: #fff; transform: translateY(-50%) scale(1.08); }
-.rooms-arrow.is-prev{ left: -13px; }
-.rooms-arrow.is-next{ right: -13px; }
-.rooms-arrow[disabled]{ opacity: 0; pointer-events: none; }
+.rooms-top .head{ margin-bottom: 0; flex: 1 1 420px; }
+.rooms-nav{ display: flex; gap: 10px; flex: none; }
+.rooms-arrow{
+  width: 46px; height: 46px; border-radius: 50%; padding: 0;
+  border: 1px solid rgba(255,255,255,.45); background: transparent; color: #FFFFFF;
+  display: grid; place-items: center; cursor: pointer;
+  transition: background .2s var(--ease), color .2s var(--ease),
+              border-color .2s var(--ease), opacity .2s var(--ease);
+}
+.rooms-arrow:hover:not([disabled]){
+  background: #FFFFFF; border-color: #FFFFFF; color: var(--green-bg);
+}
+.rooms-arrow[disabled]{ opacity: .28; cursor: default; }
 
 @media (max-width: 760px){
   .rooms-grid{ grid-template-columns: repeat(5, 76%); grid-auto-columns: 76%; }
-  .rooms-arrow{ display: none; }
+  .rooms-nav{ display: none; }   /* au doigt, on fait glisser */
 }
 
 /* ------------------------------------------------- 12b-ter. La fiche */
@@ -1051,14 +1061,17 @@ body.is-curtained{ overflow: hidden; }
   background: rgba(255,255,255,.08); border: 1px solid var(--line);
   border-radius: var(--soft); overflow: hidden;
   display: flex; flex-direction: column;
-  transition: border-color .24s var(--ease), transform .24s var(--ease), background .24s var(--ease);
 }
-.act:hover{ border-color: rgba(255,255,255,.45); transform: translateY(-3px); background: rgba(255,255,255,.12); }
-
-/* L'image porte le nom du lieu et la distance : c'est elle qui titre. */
-.act-media{ margin: 0; position: relative; aspect-ratio: 4/3; background: rgba(255,255,255,.08); }
+/* L'image porte le nom du lieu et la distance : c'est elle qui titre.
+   Le cadre rogne : sans cela l'agrandissement de 4 % au survol descendait de
+   près de six pixels par-dessus le texte, qui paraissait rétrécir. */
+.act-media{
+  margin: 0; position: relative; aspect-ratio: 4/3; overflow: hidden;
+  background: rgba(255,255,255,.08);
+}
 .act-media picture{ position: absolute; inset: 0; }
 .act-media img{ width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+/* Au survol, l'image seule bouge : la case ne se soulève pas. */
 .act:hover .act-media img{ transform: scale(1.04); }
 .act-media figcaption{
   position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 20px 17px;

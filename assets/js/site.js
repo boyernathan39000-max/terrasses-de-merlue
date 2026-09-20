@@ -371,19 +371,43 @@
     var deckPrev = $("[data-rooms-prev]");
     var deckNext = $("[data-rooms-next]");
 
+    /* Le pas d'une colonne, mesuré sur les deux premières fiches : il suit la
+       feuille de style sans la répéter ici. */
+    var deckPas = function () {
+      var a = deck.children[0], b = deck.children[1];
+      var pas = a && b ? Math.abs(b.offsetLeft - a.offsetLeft) : 0;
+      return pas || deck.clientWidth;
+    };
+    /* Une page vaut le nombre entier de colonnes visibles : trois sur grand
+       écran, une au doigt. Caler le défilement sur ce multiple évite le clic
+       qui n'avance que de quelques pixels en fin de course. */
+    var deckPage = function () {
+      var pas = deckPas();
+      return pas * Math.max(1, Math.round(deck.clientWidth / pas));
+    };
+    var deckMax = function () { return deck.scrollWidth - deck.clientWidth; };
+
     var deckPaint = function () {
-      var max = deck.scrollWidth - deck.clientWidth - 2;
-      if (deckPrev) deckPrev.disabled = deck.scrollLeft <= 2;
-      if (deckNext) deckNext.disabled = deck.scrollLeft >= max;
+      var max = deckMax();
+      if (deckPrev) deckPrev.disabled = deck.scrollLeft <= 4;
+      if (deckNext) deckNext.disabled = deck.scrollLeft >= max - 4;
     };
     var deckGo = function (sens) {
-      deck.scrollBy({ left: sens * deck.clientWidth, behavior: "smooth" });
+      var page = deckPage();
+      var cible = (Math.round(deck.scrollLeft / page) + sens) * page;
+      deck.scrollTo({
+        left: Math.max(0, Math.min(cible, deckMax())),
+        behavior: "smooth"
+      });
     };
 
     if (deckPrev) deckPrev.addEventListener("click", function () { deckGo(-1); });
     if (deckNext) deckNext.addEventListener("click", function () { deckGo(1); });
     deck.addEventListener("scroll", deckPaint, { passive: true });
     addEventListener("resize", deckPaint, { passive: true });
+    /* Les vues arrivent après le script : on repasse une fois la mise en page
+       posée, sinon une flèche pourrait rester éteinte sans raison. */
+    addEventListener("load", deckPaint);
     deckPaint();
   }
 
