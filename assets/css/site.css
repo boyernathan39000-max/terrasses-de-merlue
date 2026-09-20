@@ -1040,11 +1040,11 @@ body.is-curtained{ overflow: hidden; }
 #maison{
   background-image: var(--roseaux-encre);
   background-repeat: no-repeat;
-  background-size: auto 900px;
+  background-size: auto 1800px;
   background-position: right -110px bottom -60px;
 }
 @media (max-width: 900px){
-  #maison{ background-size: auto 480px; background-position: right -70px bottom -40px; }
+  #maison{ background-size: auto 960px; background-position: right -70px bottom -40px; }
 }
 
 /* -------------------------------------------------------- 13. Calendrier */
