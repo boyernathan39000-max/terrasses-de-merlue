@@ -959,7 +959,18 @@ body.is-curtained{ overflow: hidden; }
 /* Défilement horizontal natif avec accroche : pas de bibliothèque, et la
    pellicule reste utilisable au doigt comme à la molette si le script ne
    se charge pas. */
-.carousel{ position: relative; border-radius: 12px; overflow: hidden; background: var(--cream); }
+/* align-self : start est ce qui donne au cadre ses quatre angles arrondis.
+   Sans lui, le carrousel est une case de grille qui s'étire sur la hauteur de
+   la colonne de texte — 597 px quand la photo, en 4/3, n'en fait que 356. Le
+   rognage arrondi tombait donc 241 px plus bas, dans un fond crème que rien
+   ne distingue du blanc de la fiche : en haut la photo était arrondie, en bas
+   coupée net. Le cadre épouse maintenant la pellicule, et du même coup les
+   flèches (top:50%) se recentrent sur l'image au lieu de plonger sous elle,
+   et le compteur revient se poser dans le coin de la photo. */
+.carousel{
+  position: relative; align-self: start;
+  border-radius: 12px; overflow: hidden; background: var(--cream);
+}
 .carousel-track{
   display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
   scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;
