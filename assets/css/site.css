@@ -601,13 +601,16 @@ body.is-curtained{ overflow: hidden; }
    de pétanque » de passer sans se couper. Quand la largeur manque — écran
    étroit — elles se replient, et chaque rang reste plein. */
 .chips{ display: flex; flex-wrap: wrap; gap: 6px; }
+/* Pleines et vertes, comme le bandeau de titre du Jardin qui les surplombe :
+   la rangée se lit d'un bloc au lieu de se fondre dans le crème. Blanc sur
+   #3A5340, le contraste est de 8,4:1 — largement de quoi tenir à .74 rem. */
 .chip{
   flex: 1 1 auto; min-width: 0;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 12px; border-radius: var(--round);
   white-space: nowrap; text-align: center;
-  background: var(--cream); border: 1px solid var(--line);
-  font-size: .74rem; color: var(--ink-70);
+  background: var(--green-bg); border: 1px solid var(--green-bg);
+  font-size: .74rem; color: #FFFFFF;
 }
 /* Sous mille pixels, les huit ne tiennent plus sur un rang et le repli laisse
    un dernier rang dégarni, étiré d'un bord à l'autre. On passe alors à une
@@ -620,8 +623,9 @@ body.is-curtained{ overflow: hidden; }
 @media (max-width: 700px){
   .chips{ grid-template-columns: repeat(2, 1fr); }
 }
-.band-sage .chip{ background: rgba(255,255,255,.7); border-color: transparent; }
-.band-cream .chip{ background: var(--white); }
+/* Les deux retouches de fond par bande ont sauté : elles dataient du temps
+   où les bulles s'adaptaient à leur bande. Elles sont vertes partout, et
+   c'est « .band-cream .chip », plus spécifique, qui les repeignait en blanc. */
 
 /* --------------------------------------------------------- 10. Galeries */
 .mosaic{ display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(8px, 1vw, 12px); }
