@@ -513,13 +513,13 @@ body.is-curtained{ overflow: hidden; }
 .hero-facts{ font-size: .86rem; color: rgba(255,255,255,.8); }
 
 /* Repère de défilement */
+/* Le repère de défilement, réduit à son trait : le mot « Découvrir » a été
+   retiré. Le lien reste cliquable et nommé par son aria-label. */
 .scroll-cue{
   position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
-  z-index: 2; color: rgba(255,255,255,.7); font-size: .68rem;
-  letter-spacing: .2em; text-transform: uppercase;
-  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  z-index: 2; display: block; padding: 6px 14px;
 }
-.scroll-cue i{ display: block; width: 1px; height: 32px; background: linear-gradient(rgba(255,255,255,.7), transparent); }
+.scroll-cue i{ display: block; width: 1px; height: 40px; background: linear-gradient(rgba(255,255,255,.7), transparent); }
 @media (max-width: 860px){ .scroll-cue{ display: none; } }
 
 /* ---------------------------------------------------------- 8. Repères */
