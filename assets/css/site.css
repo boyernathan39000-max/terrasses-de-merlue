@@ -52,6 +52,10 @@
   /* Matière des bandes sombres — voir la section 6. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.05'/%3E%3C/svg%3E");
   --roseaux-encre: url("data:image/svg+xml,<svg opacity='.06' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 620'><g fill='%2338434C'><path d='M148 620 C140 470 152 344 198 236 C212 204 230 168 244 144 C234 176 222 212 210 248 C168 374 156 492 162 620 Z'/><path d='M172 620 C176 480 166 356 140 244 C131 206 120 172 112 148 C126 178 140 216 150 254 C182 368 190 486 184 620 Z'/><path d='M198 620 C204 496 230 396 288 300 C302 276 318 254 328 240 C316 266 304 292 292 320 C240 424 222 518 220 620 Z'/><path d='M124 620 C118 518 92 432 44 358 C30 336 18 318 10 306 C24 326 40 350 54 376 C102 456 132 528 138 620 Z'/><path d='M226 620 C234 534 256 470 300 418 C314 402 326 390 334 382 C324 396 314 412 305 430 C270 490 254 550 250 620 Z'/><path d='M88 620 C84 556 68 508 38 470 C28 458 20 450 14 444 C24 456 33 470 41 486 C64 526 78 570 82 620 Z'/></g><g stroke='%2338434C' fill='none' stroke-linecap='round'><path d='M168 620 C166 486 164 378 164 278' stroke-width='4.6'/><path d='M212 620 C216 512 222 424 226 344' stroke-width='4.2'/><path d='M164 176 C164 156 163 142 162 130' stroke-width='2.4'/><path d='M226 246 C227 228 227 216 227 206' stroke-width='2.1'/></g><g fill='%2338434C'><rect x='155.5' y='178' width='17' height='102' rx='8.5'/><rect x='218' y='248' width='15.5' height='90' rx='7.75'/></g></svg>");
+  /* La même touffe, en blanc : sur le marron de « La maison » l'encre ne
+     dirait rien. Un point d'opacité de plus — le blanc pèse moins que
+     l'encre à surface égale. */
+  --roseaux-clair: url("data:image/svg+xml,<svg opacity='.07' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 620'><g fill='%23FFFFFF'><path d='M148 620 C140 470 152 344 198 236 C212 204 230 168 244 144 C234 176 222 212 210 248 C168 374 156 492 162 620 Z'/><path d='M172 620 C176 480 166 356 140 244 C131 206 120 172 112 148 C126 178 140 216 150 254 C182 368 190 486 184 620 Z'/><path d='M198 620 C204 496 230 396 288 300 C302 276 318 254 328 240 C316 266 304 292 292 320 C240 424 222 518 220 620 Z'/><path d='M124 620 C118 518 92 432 44 358 C30 336 18 318 10 306 C24 326 40 350 54 376 C102 456 132 528 138 620 Z'/><path d='M226 620 C234 534 256 470 300 418 C314 402 326 390 334 382 C324 396 314 412 305 430 C270 490 254 550 250 620 Z'/><path d='M88 620 C84 556 68 508 38 470 C28 458 20 450 14 444 C24 456 33 470 41 486 C64 526 78 570 82 620 Z'/></g><g stroke='%23FFFFFF' fill='none' stroke-linecap='round'><path d='M168 620 C166 486 164 378 164 278' stroke-width='4.6'/><path d='M212 620 C216 512 222 424 226 344' stroke-width='4.2'/><path d='M164 176 C164 156 163 142 162 130' stroke-width='2.4'/><path d='M226 246 C227 228 227 216 227 206' stroke-width='2.1'/></g><g fill='%23FFFFFF'><rect x='155.5' y='178' width='17' height='102' rx='8.5'/><rect x='218' y='248' width='15.5' height='90' rx='7.75'/></g></svg>");
   --profondeur: linear-gradient(180deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,0) 38%, rgba(0,0,0,.06) 100%);
   --line-soft: #F2F0EC;
   --line-dark: rgba(255,255,255,.2);
@@ -202,6 +206,10 @@ p{ margin: 0; text-wrap: pretty; }
 
 .btn-primary{ background: var(--sage-deep); color: #fff; box-shadow: 0 6px 18px -8px rgba(69,102,76,.7); }
 .btn-primary:hover{ background: var(--ink); box-shadow: 0 10px 26px -10px rgba(56,67,76,.75); }
+/* Dans le bandeau, l'appel principal vire au marron de la charte plutôt
+   qu'à l'ardoise : sur une photographie, le marron se rattache à la maison,
+   l'ardoise à rien. */
+.hero .btn-primary:hover{ background: var(--brown-bg); box-shadow: 0 10px 26px -10px rgba(75,59,51,.8); }
 
 .btn-clay{ background: var(--clay-deep); color: #fff; box-shadow: 0 6px 18px -8px rgba(178,112,63,.7); }
 .btn-clay:hover{ background: var(--ink); box-shadow: 0 10px 26px -10px rgba(56,67,76,.75); }
@@ -401,7 +409,12 @@ body.is-curtained{ overflow: hidden; }
 .band-brown, .band-green{
   --ink: #FFFFFF;
   --ink-70: rgba(255,255,255,.80);
-  --ink-45: rgba(255,255,255,.58);
+  /* Relevé de .58 à .72 le 22 septembre 2026. Les petites mentions — intitulés
+     de case, notes sous une ligne d'option, étiquettes de coordonnées — sont
+     en capitales de 11,5 px : à .58 elles tombaient à 3,55:1 sur le voile
+     clair d'une case, sous le seuil de 4,5:1 que demande un texte de cette
+     taille. À .72 elles le passent sans se confondre avec --ink-70. */
+  --ink-45: rgba(255,255,255,.72);
   --line: rgba(255,255,255,.20);
   --line-soft: rgba(255,255,255,.12);
   --white: rgba(255,255,255,.07);
@@ -453,8 +466,24 @@ body.is-curtained{ overflow: hidden; }
 
 /* La tuile de titre, elle, se démarque par un simple voile clair */
 .band-brown .band-tile, .band-green .band-tile{ background: rgba(255,255,255,.09); }
-/* Les cases qui portent le titre de section se détachent en vert */
-.band-brown .around-tile{ background: var(--green-bg); }
+
+/* Deux cases s'inversent : fond clair, lettres vertes. « Les intérieurs » et
+   « Le Jardin » dans « La maison », passée au marron, et la case de titre des
+   Activités. Une case verte sur du marron se perd — deux teintes sombres
+   voisines, presque aucune séparation. Sur le crème, au contraire, elle
+   tranche, et le vert de la charte revient dans les lettres.
+   Les jetons clairs sont réécrits en dur : dans la portée d'une bande sombre,
+   --cream et --ink valent déjà du blanc translucide.
+   Contrastes sur #FBF9F5 : titre vert 8,0:1, sur-titre 6,6:1. */
+#maison .band-tile.is-green,
+#activites .around-tile{
+  background: #FBF9F5;
+  --ink: #3A5340;
+  --ink-70: #5E6871;
+  --ink-45: #99A2AA;
+  --sage-deep: #45664C;
+  color: #3A5340;
+}
 
 /* Les jours occupés du calendrier restent lisibles */
 .band-green .cal{ background: rgba(255,255,255,.06); }
@@ -512,18 +541,13 @@ body.is-curtained{ overflow: hidden; }
 }
 .hero-facts{ font-size: .86rem; color: rgba(255,255,255,.8); }
 
-/* Repère de défilement */
-/* Le repère de défilement, réduit à son trait : le mot « Découvrir » a été
-   retiré. Le lien reste cliquable et nommé par son aria-label. */
-.scroll-cue{
-  position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
-  z-index: 2; display: block; padding: 6px 14px;
-}
-.scroll-cue i{ display: block; width: 1px; height: 40px; background: linear-gradient(rgba(255,255,255,.7), transparent); }
-@media (max-width: 860px){ .scroll-cue{ display: none; } }
+/* Le repère de défilement a disparu : d'abord le mot « Découvrir », puis le
+   trait. Ses règles sont parties avec lui. */
 
 /* ---------------------------------------------------------- 8. Repères */
-.facts{ display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(14px, 2vw, 28px); }
+/* Quatre repères depuis le retrait de « 4 km du lac » : deux rangs de deux
+   dès que la ligne ne tient plus, jamais un chiffre seul en bout de rang. */
+.facts{ display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(14px, 2vw, 28px); }
 .fact{ text-align: center; }
 .fact b{
   display: block; font-family: var(--display); font-size: clamp(2rem, 3.6vw, 2.9rem);
@@ -531,8 +555,7 @@ body.is-curtained{ overflow: hidden; }
   font-variant-numeric: tabular-nums;
 }
 .fact span{ font-size: .8rem; color: var(--ink-70); line-height: 1.4; display: block; }
-@media (max-width: 860px){ .facts{ grid-template-columns: repeat(3, 1fr); row-gap: 30px; } }
-@media (max-width: 460px){ .facts{ grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 860px){ .facts{ grid-template-columns: repeat(2, 1fr); row-gap: 30px; } }
 
 /* ------------------------------------------------------------ 9. Blocs */
 /* Le motif de référence : un bandeau de titre pleine largeur — sur-titre
@@ -612,6 +635,11 @@ body.is-curtained{ overflow: hidden; }
   background: var(--green-bg); border: 1px solid var(--green-bg);
   font-size: .74rem; color: #FFFFFF;
 }
+/* Depuis que « La maison » est marron, le vert de la bulle ne se détache plus
+   de la bande : 1,26:1 entre les deux aplats, la forme disparaît. Le vert
+   reste — c'est lui qui a été demandé — mais un filet clair redessine le
+   contour. Le texte, lui, tient toujours son 8,4:1 sur le vert. */
+.band-brown .chip{ border-color: rgba(255,255,255,.40); }
 /* Sous mille pixels, les huit ne tiennent plus sur un rang et le repli laisse
    un dernier rang dégarni, étiré d'un bord à l'autre. On passe alors à une
    grille dont le nombre de colonnes divise huit : quatre, puis deux. Tous
@@ -738,6 +766,13 @@ body.is-curtained{ overflow: hidden; }
 
 /* --------------------------------------------------------- 12. Formules */
 /* Accordéons, comme la page « Formules & tarifs » de référence */
+/* Le bouton qui a remplacé le calendrier de disponibilités : seul sur sa
+   ligne, centré comme le titre qui le précède. */
+.dispos{
+  display: flex; justify-content: center;
+  margin-bottom: clamp(30px, 4vw, 52px);
+}
+
 .accordion{ border-top: 1px solid var(--line); }
 .acc{ border-bottom: 1px solid var(--line); }
 .acc summary{
@@ -951,6 +986,18 @@ body.is-curtained{ overflow: hidden; }
 }
 .room-formules h4{ font-family: var(--body); font-size: .72rem; font-weight: 700;
   letter-spacing: .16em; text-transform: uppercase; color: var(--ink-45); }
+/* Le ménage obligatoire, rappelé sous les formules : il a quitté la case
+   « En option » des services pour venir au plus près de ce qu'il concerne.
+   Même graisse et même alignement que les formules, mais séparé par un trait
+   — ce n'est pas une formule de plus, c'est ce qui s'y ajoute. */
+.room-fee{
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  padding-top: 10px; border-top: 1px solid var(--line);
+  font-size: .88rem; color: var(--ink-70);
+}
+.room-fee small{ color: var(--ink-45); font-size: .78rem; }
+.room-fee b{ font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
 .room-formules table{ width: 100%; border-collapse: collapse; font-size: .88rem; }
 .room-formules th{ text-align: left; font-weight: 400; color: var(--ink-70); padding: 5px 0; }
 .room-formules td{ text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; padding: 5px 0; }
@@ -1144,20 +1191,31 @@ body.is-curtained{ overflow: hidden; }
 .svc-rows.is-text .v{ font-weight: 400; text-align: left; white-space: normal; color: var(--ink-70); }
 
 
-/* Un grand roseau en arrière-plan de « La maison ». Même dessin que celui des
-   bandes sombres, mais à l'encre : sur le crème, le blanc ne dirait rien. Il
-   part du bas à droite et déborde des deux côtés — images et textes de la
-   section lui passent par-dessus.
-   Silhouette pleine et non contour : à opacité égale elle pèse bien plus
-   lourd qu'un dessin au trait, d'où les 6 % plutôt que 9. */
-#maison{
-  background-image: var(--roseaux-encre);
-  background-repeat: no-repeat;
-  background-size: auto 1800px;
-  background-position: right -110px bottom -60px;
-}
-@media (max-width: 900px){
-  #maison{ background-size: auto 960px; background-position: right -70px bottom -40px; }
+/* Un grand roseau en arrière-plan de « La maison ». Il part du bas à droite et
+   déborde des deux côtés — images et textes de la section lui passent
+   par-dessus. Silhouette pleine et non contour : à opacité égale elle pèse
+   bien plus lourd qu'un dessin au trait.
+   Depuis que la section est marron, c'est la version claire. Et comme
+   #maison (1,0,0) l'emporte sur .band-brown (0,1,0), cette règle doit
+   reprendre le grain et la profondeur de la bande, sans quoi elle les
+   effacerait toutes les deux en ne déclarant que le roseau. */
+/* Le roseau est un calque et non plus un fond, et il garde la même taille à
+   toutes les largeurs : un fond s'arrête au bord de sa section, et le réduire
+   pour qu'il y tienne était le contraire de ce qui est demandé. Il descend
+   donc de 360 px dans « Les chambres ».
+   L'ordre de peinture fait tout le travail : un élément positionné passe
+   au-dessus du fond de la section suivante — c'est ce qu'on veut — mais aussi
+   au-dessus de son texte, ce qu'on ne veut pas. D'où les deux coquilles
+   remontées d'un cran : le roseau à 0, les contenus à 1.
+   overflow-x: clip retient le débordement latéral sans retenir le vertical ;
+   overflow: hidden aurait bloqué les deux. */
+#maison{ position: relative; overflow-x: clip; overflow-y: visible; }
+#maison > .shell, #chambres > .shell{ position: relative; z-index: 1; }
+.roseau{
+  position: absolute; z-index: 0; pointer-events: none;
+  right: -110px; bottom: -360px;
+  width: 1045px; height: 1800px;      /* le dessin fait 360 × 620 */
+  background: var(--roseaux-clair) no-repeat center / contain;
 }
 
 /* -------------------------------------------------------- 13. Calendrier */
@@ -1272,7 +1330,7 @@ body.is-curtained{ overflow: hidden; }
 
 /* ------------------------------------------------------- 17. Impression */
 @media print{
-  .masthead, .dock, .lightbox, .burger, .scroll-cue,
+  .masthead, .dock, .lightbox, .burger,
   .curtain{ display: none !important; }
   body{ background: #fff; font-size: 11pt; padding-bottom: 0; }
   .hero-media{ display: none; } .hero-in{ min-height: 0; color: #000; padding-block: 20pt; }

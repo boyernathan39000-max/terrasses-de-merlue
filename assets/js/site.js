@@ -454,18 +454,12 @@
     var endpoint = form.getAttribute("data-endpoint") || "";
     var mailTo = form.getAttribute("data-mailto") || "";
 
-    // Les dates ne peuvent pas être dans le passé, et le départ suit l'arrivée.
-    var arrival = $("#arrivee", form);
-    var departure = $("#depart", form);
-    if (arrival && departure) {
-      var today = new Date().toISOString().slice(0, 10);
-      arrival.min = today;
-      departure.min = today;
-      arrival.addEventListener("change", function () {
-        departure.min = arrival.value || today;
-        if (departure.value && departure.value < arrival.value) departure.value = arrival.value;
-      });
-    }
+    /* Les champs d'arrivée et de départ sont passés en texte libre, à la
+       demande du client : le sélecteur du navigateur ne s'ouvre plus au clic.
+       Le garde-fou qui vivait ici — min au jour même, départ recalé sur
+       l'arrivée — est tombé avec eux. Il comparait deux chaînes AAAA-MM-JJ ;
+       sur « 12/10/2026 » et « 03/11/2026 » il aurait conclu que le départ
+       précède l'arrivée et écrasé ce que le visiteur venait de taper. */
 
     function fieldOf(el) { return el.closest(".field"); }
 
