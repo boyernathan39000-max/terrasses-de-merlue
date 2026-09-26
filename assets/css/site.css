@@ -150,6 +150,12 @@ h1, h2, h3, h4{
   margin: 0;
 }
 
+/* Les trois échelles de titre portent la fonte de titre. Elle n'était posée
+   que sur h1..h4, si bien qu'une échelle appliquée à autre chose — le titre
+   de la case des traiteurs est un <p>, faute d'être l'en-tête d'une section —
+   prenait la bonne taille et la fonte du texte courant. Sur les h2, cette
+   déclaration ne change rien : ils l'avaient déjà. */
+.t-hero, .t-xl, .t-lg{ font-family: var(--display); }
 .t-hero{ font-size: clamp(2.3rem, 5.8vw, 4.2rem); font-weight: 400; line-height: 1.06; letter-spacing: -.02em; }
 .t-xl{ font-size: clamp(1.85rem, 4vw, 2.9rem); font-weight: 400; line-height: 1.12; letter-spacing: -.015em; }
 .t-lg{ font-size: clamp(1.45rem, 2.7vw, 2rem); font-weight: 400; line-height: 1.18; }
@@ -312,6 +318,18 @@ body.is-curtained{ overflow: hidden; }
   box-shadow: 0 1px 0 var(--line);
 }
 
+/* Menu ouvert, l'en-tête rend son filtre. Un élément filtré devient le bloc
+   conteneur de ses descendants en position fixe : le panneau du menu, qui est
+   son enfant et se pose en inset: 0, remplissait alors l'EN-TÊTE — 144 px de
+   haut — au lieu de l'écran. Le bogue ne se voyait qu'une fois le bandeau
+   collé, c'est-à-dire dès qu'on avait défilé.
+   Le filtre n'a de toute façon plus rien à flouter : le panneau blanc est
+   devant. « .is-stuck » est répété pour passer devant la règle ci-dessus, qui
+   a la même spécificité et vient avant. */
+body.menu-ouvert .masthead.is-stuck{
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+
 .masthead-in{ display: flex; align-items: center; justify-content: space-between; gap: 22px; }
 
 .brand img{ height: 50px; width: auto; transition: height .35s var(--ease); }
@@ -323,19 +341,40 @@ body.is-curtained{ overflow: hidden; }
 .masthead.is-stuck .brand .logo-light{ display: none; }
 
 .nav{ display: flex; align-items: center; gap: clamp(16px, 2.2vw, 34px); }
-.nav a{
+/* « :not(.btn) » sur toutes les règles de couleur du menu : l'appel
+   « Réserver » du panneau est un <a> comme les autres entrées, et ces règles
+   lui prenaient sa couleur. Une fois le bandeau collé, il s'affichait en
+   --ink-70 sur son propre vert — 1,13:1, illisible. Empiler la spécificité
+   aurait marché ; exclure les boutons dit ce qu'on veut dire. */
+.nav a:not(.btn){
   font-size: .88rem; font-weight: 500; color: #fff; white-space: nowrap;
   position: relative; padding-block: 5px;
   transition: color .22s var(--ease);
 }
-.masthead.is-stuck .nav a{ color: var(--ink-70); }
-.nav a::after{
+.masthead.is-stuck .nav a:not(.btn){ color: var(--ink-70); }
+.nav a:not(.btn)::after{
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px;
   background: currentColor; transform: scaleX(0); transform-origin: left;
   transition: transform .26s var(--ease);
 }
-.nav a:hover::after, .nav a.is-active::after{ transform: scaleX(1); }
-.masthead.is-stuck .nav a:hover, .masthead.is-stuck .nav a.is-active{ color: var(--ink); }
+.nav a:not(.btn):hover::after, .nav a.is-active::after{ transform: scaleX(1); }
+.masthead.is-stuck .nav a:not(.btn):hover,
+.masthead.is-stuck .nav a.is-active:not(.btn){ color: var(--ink); }
+
+/* Le logo et la commande passent devant le panneau du menu. Sans cela ils
+   restaient dessous : le panneau est un enfant de l'en-tête et porte un
+   z-index de 88, eux n'étaient pas positionnés du tout — dans la pile, un
+   descendant positionné passe toujours devant ce qui ne l'est pas. La croix
+   de fermeture était donc dessinée, blanche et bien tournée, mais recouverte,
+   et le clic tombait sur le panneau.
+   C'est d'ailleurs ce que le panneau prévoyait : ses 104 px de rembourrage en
+   haut ménagent exactement la place de la barre d'en-tête. */
+.brand, .masthead-tail{ position: relative; z-index: 92; }
+/* Menu ouvert, le logo s'efface — mais sa boîte reste. .masthead-in répartit
+   ses enfants en space-between : le retirer du flux aurait renvoyé la croix
+   contre le bord gauche. visibility le sort aussi de l'ordre de tabulation et
+   de l'arbre d'accessibilité, ce que opacity: 0 n'aurait pas fait. */
+body.menu-ouvert .brand{ visibility: hidden; }
 
 .masthead-tail{ display: flex; align-items: center; gap: 12px; }
 
@@ -355,9 +394,17 @@ body.is-curtained{ overflow: hidden; }
   background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.55);
   backdrop-filter: blur(6px);
 }
+/* Deux états, deux survols. Tant que le bandeau est posé sur la photographie,
+   le bouton est un verre dépoli : au survol il se remplit de blanc, seule
+   couleur qui tienne sur une image dont on ignore la teinte sous le curseur.
+   Une fois le bandeau devenu blanc au défilement, le bouton est vert plein et
+   vire au marron de la charte — blanc sur #4B3B33, 10,6:1.
+   La dernière ligne vise le jumeau du bouton, celui qui n'apparaît que dans
+   le menu déplié sous 1081 px : lui n'est jamais transparent, il suit le vert. */
 .masthead .btn-head:hover{ background: #fff; color: var(--ink); border-color: #fff; }
 .masthead.is-stuck .btn-head{ background: var(--sage-deep); color: #fff; border-color: transparent; }
-.masthead.is-stuck .btn-head:hover{ background: var(--ink); }
+.masthead.is-stuck .btn-head:hover{ background: var(--brown-bg); }
+.masthead .nav-cta .btn-primary:hover{ background: var(--brown-bg); }
 
 .burger{
   display: none; width: 44px; height: 44px; padding: 0; flex: none;
@@ -365,9 +412,19 @@ body.is-curtained{ overflow: hidden; }
   border-radius: var(--round); cursor: pointer; align-items: center; justify-content: center;
   backdrop-filter: blur(6px);
 }
-.masthead.is-stuck .burger{ background: var(--cream); border-color: var(--line); }
+/* Sur la bande blanche, la pastille passe au vert — le même que « Réserver »
+   à côté d'elle, les deux commandes forment une paire.
+   Et menu ouvert, elle y passe aussi, quel que soit l'état du bandeau : le
+   panneau du menu est blanc et se glisse DERRIÈRE l'en-tête (z-index 88
+   contre 90). Les barres, blanches, se retrouvaient blanc sur blanc — la
+   croix de fermeture était strictement invisible. */
+.masthead.is-stuck .burger,
+.burger[aria-expanded="true"]{
+  background: var(--sage-deep); border-color: transparent; backdrop-filter: none;
+}
 .burger i{ display: block; width: 17px; height: 1.5px; background: #fff; position: relative; transition: background .2s; }
-.masthead.is-stuck .burger i, .masthead.is-stuck .burger i::before, .masthead.is-stuck .burger i::after{ background: var(--ink); }
+.masthead.is-stuck .burger i, .masthead.is-stuck .burger i::before, .masthead.is-stuck .burger i::after,
+.burger[aria-expanded="true"] i::before, .burger[aria-expanded="true"] i::after{ background: #fff; }
 .burger i::before, .burger i::after{
   content: ""; position: absolute; left: 0; width: 17px; height: 1.5px; background: #fff;
   transition: transform .28s var(--ease), top .22s var(--ease);
@@ -391,11 +448,11 @@ body.is-curtained{ overflow: hidden; }
     transition: opacity .26s var(--ease), visibility 0s .26s;
   }
   .nav.is-open{ opacity: 1; visibility: visible; transition: opacity .26s var(--ease), visibility 0s; }
-  .nav a{
+  .nav a:not(.btn){
     font-family: var(--display); font-size: 1.45rem; font-weight: 400; color: var(--ink);
     padding-block: 17px; border-bottom: 1px solid var(--line-soft);
   }
-  .nav a::after{ display: none; }
+  .nav a:not(.btn)::after{ display: none; }
   .nav .nav-cta{ margin-top: 26px; border: 0; }
   .nav .nav-cta .btn{ width: 100%; }
 }
@@ -467,22 +524,19 @@ body.is-curtained{ overflow: hidden; }
 /* La tuile de titre, elle, se démarque par un simple voile clair */
 .band-brown .band-tile, .band-green .band-tile{ background: rgba(255,255,255,.09); }
 
-/* Deux cases s'inversent : fond clair, lettres vertes. « Les intérieurs » et
-   « Le Jardin » dans « La maison », passée au marron, et la case de titre des
-   Activités. Une case verte sur du marron se perd — deux teintes sombres
-   voisines, presque aucune séparation. Sur le crème, au contraire, elle
-   tranche, et le vert de la charte revient dans les lettres.
-   Les jetons clairs sont réécrits en dur : dans la portée d'une bande sombre,
-   --cream et --ink valent déjà du blanc translucide.
-   Contrastes sur #FBF9F5 : titre vert 8,0:1, sur-titre 6,6:1. */
-#maison .band-tile.is-green,
-#activites .around-tile{
-  background: #FBF9F5;
-  --ink: #3A5340;
-  --ink-70: #5E6871;
-  --ink-45: #99A2AA;
-  --sage-deep: #45664C;
-  color: #3A5340;
+/* Les cases qui portent le titre de section se détachent en vert, lettres
+   claires — « Les intérieurs » et « Le Jardin » dans « La maison », et la case
+   de titre des Activités. Elles l'avaient été en crème le temps d'un essai le
+   22 septembre ; le client les a ramenées au vert le jour même.
+   « .band-tile.is-green » suffit pour les deux premières : elle vient après
+   « .band-brown .band-tile » dans la feuille et l'emporte à spécificité égale.
+   La case des Activités, elle, n'a pas cette classe : d'où la règle qui suit. */
+.band-brown .around-tile{
+  background: var(--green-bg);
+  /* Le sur-titre suit --sage-deep, qui vaut un beige chaud dans la portée
+     d'une bande marron. Sur une case verte il jurait : on lui rend le vert
+     clair des deux cases de « La maison ». 5,8:1 sur #3A5340. */
+  --sage-deep: #C6DCC8;
 }
 
 /* Les jours occupés du calendrier restent lisibles */
@@ -516,6 +570,13 @@ body.is-curtained{ overflow: hidden; }
 }
 .hero-media picture.is-on{ opacity: 1; }
 .hero-media img{ width: 100%; height: 100%; object-fit: cover; }
+/* Au téléphone, l'écran est haut et étroit : le cadrage centré de la première
+   vue ne gardait qu'une bande médiane, et la maison — qui occupe la moitié
+   gauche de la photographie — tombait hors champ. Le cadrage recule donc vers
+   la gauche, ce qui fait entrer la maison par la droite. */
+@media (max-width: 760px){
+  .hero-media picture:first-child img{ object-position: 35% 50%; }
+}
 .hero-media::after{
   content: ""; position: absolute; inset: 0;
   background:
@@ -541,8 +602,85 @@ body.is-curtained{ overflow: hidden; }
 }
 .hero-facts{ font-size: .86rem; color: rgba(255,255,255,.8); }
 
+/* Au téléphone, le bas du bandeau est réglé d'un bloc : le chapô se resserre,
+   les deux boutons tiennent sur une ligne — ils ne s'étirent plus l'un sous
+   l'autre — et l'ensemble remonte, pour que la barre des avis Google ne colle
+   plus au bord de l'écran. Le rembourrage du bas fait le gros du travail :
+   la colonne est calée en bas, on ne remonte pas la note en serrant ce qui
+   est au-dessus d'elle, on remonte tout. */
+@media (max-width: 760px){
+  .hero-in{ padding-block: 110px clamp(56px, 13vw, 84px); }
+  .hero h1{ margin-bottom: 14px; }
+  .hero .lede{ font-size: .95rem; margin-bottom: 22px; max-width: 32ch; }
+  .hero .btns{ flex-wrap: nowrap; gap: 10px; margin-bottom: 22px; }
+  .hero .btns .btn{
+    flex: 1 1 0; min-width: 0; padding-inline: 14px;
+    font-size: .84rem; white-space: nowrap; text-align: center;
+    justify-content: center;
+  }
+  .hero-foot{ padding-top: 16px; gap: 8px 18px; }
+}
+
 /* Le repère de défilement a disparu : d'abord le mot « Découvrir », puis le
    trait. Ses règles sont parties avec lui. */
+
+/* --------------------------------------------- 7b. Bandes défilantes */
+/* Deux rangées se changent en bande sans fin au téléphone : les repères sous
+   le bandeau, et les bulles du parc. Le principe est le même dans les deux
+   cas — deux copies identiques côte à côte, translatées ensemble de leur
+   propre largeur plus l'écart. Quand la première a fini de sortir par la
+   gauche, la seconde occupe très exactement sa place de départ : l'animation
+   peut repartir de zéro, personne ne voit la couture.
+   Sur grand écran, la copie n'existe pas et la première reprend sa grille :
+   ces règles ne vivent que dans la fenêtre du téléphone. */
+/* Deux sélecteurs et non un : la piste EST la grille — .facts, .chips — et
+   ces deux-là déclarent leur propre display. À spécificité égale, c'est la
+   dernière écrite qui l'emporte, et elles sont plus bas dans la feuille.
+   « .ruban > » suffit à passer devant, quel que soit l'ordre. */
+.ruban > .ruban-copie{ display: none; }
+
+@keyframes ruban-defile{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(calc(-100% - var(--rg))); }
+}
+
+@media (max-width: 760px){
+  .ruban{
+    display: flex; gap: var(--rg); overflow: hidden;
+    /* La bande touche les deux bords de l'écran : elle sort de la coquille,
+       sinon elle s'arrêterait sur la gouttière et l'on verrait le départ. */
+    margin-inline: calc(-1 * var(--gutter));
+    /* Les deux extrémités s'effacent, pour que rien n'apparaisse ni ne
+       disparaisse d'un coup au ras du cadre. */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .ruban > .ruban-piste{
+    display: flex; flex: none; width: max-content;
+    grid-template-columns: none; gap: var(--rg);
+    animation: ruban-defile var(--rd) linear infinite;
+  }
+  .ruban > .ruban-copie{ display: flex; }
+
+  /* Les repères gardent leur corps de texte ; seule leur largeur est fixée,
+     à ce qu'elle valait dans la grille de deux colonnes. */
+  .facts-ruban{ --rg: clamp(14px, 2vw, 28px); --rd: 30s; }
+  .facts-ruban .fact{
+    flex: none;
+    width: calc((100vw - 2 * var(--gutter) - var(--rg)) / 2);
+  }
+  /* Les bulles gardent leur corps, leur rembourrage et leur écart. Leur
+     largeur, elle, suit le texte : dans une bande qui défile, une bulle
+     étirée à la moitié de l'écran n'a plus de sens. */
+  .chips-ruban{ --rg: 8px; --rd: 26s; }
+  .chips-ruban .chip{ flex: none; font-size: .8rem; padding: 10px 12px; }
+}
+
+/* Qui a demandé moins de mouvement n'a pas demandé une bande qui tourne. */
+@media (prefers-reduced-motion: reduce){
+  .ruban > .ruban-piste{ animation: none; }
+  .ruban{ overflow-x: auto; }
+}
 
 /* ---------------------------------------------------------- 8. Repères */
 /* Quatre repères depuis le retrait de « 4 km du lac » : deux rangs de deux
@@ -579,6 +717,22 @@ body.is-curtained{ overflow: hidden; }
   color: #FFFFFF;
 }
 .band-tile h2{ color: var(--ink); }
+/* Variante en ligne : le titre à gauche, l'appel à droite, et l'un sous
+   l'autre dès que la ligne ne tient plus. Le titre prend la place qui reste,
+   le bouton garde la sienne. */
+.band-tile.is-row{
+  flex-direction: row; align-items: center; justify-content: space-between;
+  gap: 16px 32px; flex-wrap: wrap; text-align: left;
+}
+.band-tile.is-row .t-lg{ flex: 1 1 360px; color: var(--ink); }
+.band-tile.is-row .btn{ flex: none; }
+/* Sur une ligne, le titre tient la gauche et l'appel la droite. Dès qu'ils
+   s'empilent, « space-between » n'a plus rien à répartir — chaque ligne n'a
+   qu'un élément, et il se collerait à gauche. On centre alors les deux. */
+@media (max-width: 680px){
+  .band-tile.is-row{ justify-content: center; text-align: center; }
+  .band-tile.is-row .t-lg{ flex: 0 1 auto; }
+}
 .band-tile .note{ margin-top: 8px; max-width: 64ch; }
 
 .trio{
@@ -592,6 +746,27 @@ body.is-curtained{ overflow: hidden; }
 .trio-img picture{ position: absolute; inset: 0; }
 .trio-img img{ width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
 .trio-img:hover img{ transform: scale(1.03); }
+/* Une vignette qui ouvre sa suite en grand est un bouton, pas une boîte : le
+   clavier doit pouvoir l'atteindre et la touche Entrée l'ouvrir. Il lui faut
+   alors se défaire de ce qu'un bouton porte par défaut. */
+button.trio-img{
+  display: block; width: 100%; padding: 0; border: 0;
+  font: inherit; color: inherit; cursor: zoom-in;
+}
+/* Le nombre de vues, en bas à droite de la vignette. Elle ne reçoit pas le
+   clic — c'est la vignette entière qui ouvre, et une pastille cliquable dans
+   un bouton ferait deux cibles là où il n'y en a qu'une. */
+.trio-plus{
+  position: absolute; right: 10px; bottom: 10px; z-index: 1;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 11px; border-radius: var(--round);
+  background: rgba(255,255,255,.94); color: var(--ink-bg);
+  font-size: .74rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 10px rgba(20,26,30,.3);
+  pointer-events: none;
+  transition: background .2s var(--ease), color .2s var(--ease);
+}
+button.trio-img:hover .trio-plus{ background: var(--brown-bg); color: #FFFFFF; }
 
 @media (max-width: 900px){
   .trio{ grid-template-columns: 1fr 1fr; }
@@ -600,6 +775,17 @@ body.is-curtained{ overflow: hidden; }
 @media (max-width: 560px){
   .trio{ grid-template-columns: 1fr; }
   .trio-text{ grid-column: auto; }
+  /* Empilées, les trois cellules vont image, texte, image — dans les deux
+     rangs. Le balisage, lui, garde l'alternance qui fait zigzaguer le regard
+     sur grand écran : c'est `order` qui glisse le texte au milieu, et il faut
+     numéroter les trois cellules, pas seulement celles qui bougent — une
+     cellule sans `order` vaut zéro et passerait devant tout le monde. */
+  .trio.is-text-last > :nth-child(1){ order: 1; }
+  .trio.is-text-last > :nth-child(2){ order: 3; }
+  .trio.is-text-last > :nth-child(3){ order: 2; }
+  .trio.is-text-first > :nth-child(1){ order: 2; }
+  .trio.is-text-first > :nth-child(2){ order: 1; }
+  .trio.is-text-first > :nth-child(3){ order: 3; }
 }
 
 /* Deux colonnes simples */
@@ -665,14 +851,50 @@ body.is-curtained{ overflow: hidden; }
 .mosaic button:hover img{ transform: scale(1.05); }
 .mosaic .is-wide{ grid-column: span 2; aspect-ratio: 2/1; }
 @media (max-width: 1000px){ .mosaic{ grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 620px){ .mosaic{ grid-template-columns: repeat(3, 1fr); } }
+/* À trois colonnes, la première image en occupe deux et laisse la troisième
+   vide : c'est la dernière de la série qui vient la combler. Il faut numéroter
+   les trois groupes et non seulement celui qui bouge — une case sans `order`
+   vaut zéro et repasserait devant. */
+@media (max-width: 620px){
+  .mosaic{ grid-template-columns: repeat(3, 1fr); }
+  .mosaic > button{ order: 3; }
+  .mosaic > button:first-child{ order: 1; }
+  .mosaic > button:last-child{ order: 2; }
+}
 
+/* margin: 0 n'est pas décoratif. La visionneuse est un <figure>, et le
+   navigateur lui donne d'office « margin: 1em 40px ». Posée en fixed avec
+   inset: 0, elle y perdait 80 px de large et 34 de haut : sur un téléphone de
+   390 px, la vue agrandie tombait à 279 px — plus petite que la vignette sur
+   laquelle on venait de cliquer. Sur grand écran la perte ne se voyait pas,
+   la hauteur bornait déjà l'image. */
 .lightbox{
-  position: fixed; inset: 0; z-index: 120; display: none;
-  background: rgba(30,38,44,.95); place-items: center; padding: 4vmin;
+  position: fixed; inset: 0; margin: 0; z-index: 120; display: none;
+  background: rgba(30,38,44,.95); padding: 4vmin;
+  /* place-items centrait chaque élément dans SA rangée, et les deux rangées
+     — l'image, la légende — s'étiraient pour remplir la hauteur. L'image se
+     retrouvait centrée dans une rangée de 510 px, donc 150 px trop haut, avec
+     un grand vide sous elle. align-content ramène les rangées à la hauteur de
+     leur contenu et centre le bloc entier. */
+  place-items: center; align-content: center; gap: 0;
 }
 .lightbox[open]{ display: grid; }
-.lightbox img{ max-width: 100%; max-height: 86vh; object-fit: contain; border-radius: 10px; }
+.lightbox img{
+  /* Un cadre fixe, et non une simple largeur maximale. Sans cela chaque vue
+     s'affichait à sa taille propre : dans le carrousel du parc, une vue de
+     768 px en 3/2 voisinait avec des 2048 px en 4/3, et l'une faisait 86 px
+     de moins que l'autre. Ce n'était pas la définition qui les séparait mais
+     le format.
+     Le cadre fait donc 4/3 — celui de la photothèque — large de 86vh × 4/3,
+     c'est-à-dire de quoi tenir toute la hauteur disponible ; sur un écran
+     étroit, c'est la largeur de l'écran qui l'emporte. « contain » y loge
+     chaque vue sans la déformer ni la rogner : celles qui ne sont pas en 4/3
+     gardent leurs proportions et laissent deux bandes. */
+  width: min(100%, calc(86vh * 4 / 3));
+  aspect-ratio: 4 / 3;
+  height: auto;
+  object-fit: contain; border-radius: 10px;
+}
 .lightbox figcaption{ color: rgba(255,255,255,.72); font-size: .85rem; text-align: center; padding-top: 16px; }
 .lb-btn{
   position: absolute; width: 50px; height: 50px; border-radius: var(--round);
@@ -680,6 +902,23 @@ body.is-curtained{ overflow: hidden; }
   display: grid; place-items: center; transition: background .2s var(--ease);
 }
 .lb-btn:hover{ background: rgba(255,255,255,.3); }
+
+/* Les deux flèches de la visionneuse passent au blanc plein, comme celles des
+   carrousels du site : sur le fond très sombre de la visionneuse, un disque à
+   14 % de blanc se voyait à peine, et c'est pourtant la commande principale —
+   c'est par elle qu'on parcourt les autres photographies.
+   La croix de fermeture garde son voile discret : elle est secondaire, et la
+   touche Échap comme le clic sur le fond la doublent. */
+.lb-prev, .lb-next{
+  background: #FFFFFF; color: var(--brown-bg);
+  box-shadow: 0 3px 16px rgba(0,0,0,.45);
+  transition: background .2s var(--ease), color .2s var(--ease),
+              transform .2s var(--ease);
+}
+.lb-prev:hover, .lb-next:hover{
+  background: var(--brown-bg); color: #FFFFFF;
+  transform: translateY(-50%) scale(1.06);
+}
 .lb-close{ top: 3vmin; right: 3vmin; }
 .lb-prev{ left: 3vmin; top: 50%; transform: translateY(-50%); }
 .lb-next{ right: 3vmin; top: 50%; transform: translateY(-50%); }
@@ -772,6 +1011,20 @@ body.is-curtained{ overflow: hidden; }
   display: flex; justify-content: center;
   margin-bottom: clamp(30px, 4vw, 52px);
 }
+/* Deux emplacements pour une seule pastille d'avis, jamais les deux à la
+   fois. Sur grand écran elle est centrée sous les coordonnées, sur la carte ;
+   dès que les deux colonnes s'empilent — 880 px, comme .duo — elle remonte
+   sous le bouton des disponibilités, sans quoi elle se retrouvait au milieu
+   d'une page devenue très longue. Celle qui ne sert pas est en display:none,
+   donc absente de l'arbre d'accessibilité : aucun lien en double. */
+.dispos-avis{ display: none; }
+@media (max-width: 880px){
+  .dispos{ flex-direction: column; align-items: center; gap: 18px; }
+  .dispos-avis{ display: flex; }
+  /* Préfixée par #contact : .contact-rating{ display: flex } est écrite plus bas,
+     et à spécificité égale c'est elle qui l'emportait. */
+  #contact .contact-rating{ display: none; }
+}
 
 .accordion{ border-top: 1px solid var(--line); }
 .acc{ border-bottom: 1px solid var(--line); }
@@ -816,6 +1069,49 @@ body.is-curtained{ overflow: hidden; }
 .price-duo .price-card:last-child b{ color: var(--clay-deep); }
 @media (max-width: 620px){ .price-duo{ grid-template-columns: 1fr; } }
 
+
+/* ------------------------------------------- 11b. Rangées en carrousel */
+/* Les vues du parc et les trois destinations gardent leur grille sur grand
+   écran et deviennent des carrousels au téléphone. Un seul balisage pour les
+   deux états : la voie est la grille elle-même, à qui l'on donne ici le
+   défilement en x et l'accroche. Les flèches se posent au-dessus, à droite,
+   comme celles du pont des chambres.
+   Elles sont pilotées par le même script que le pont — voir `pont()` dans
+   site.js — qui mesure le pas sur les deux premières cellules au lieu de le
+   supposer. Sur grand écran il ne trouve rien à faire : la voie ne déborde
+   pas, les deux flèches restent éteintes, et la feuille de style les cache. */
+.piste-nav{ display: none; }
+
+@media (max-width: 900px){
+  /* Les deux flèches quittent le fil et se posent sur l'image, une par bord,
+     à mi-hauteur de celle-ci. `display: contents` sur leur boîte : elle ne
+     produit plus de cadre, les boutons deviennent enfants de la piste et s'y
+     positionnent directement.
+     La hauteur : la voie fait toute la largeur de la coquille, l'image est un
+     4/3, donc sa moitié vaut trois huitièmes de cette largeur. C'est vrai des
+     vues du parc, où la cellule EST l'image, comme des destinations, où
+     l'image occupe le haut de la case. */
+  .piste{ position: relative; display: block; }
+  .piste-nav{ display: contents; }
+  .piste-fleche{
+    position: absolute; z-index: 2;
+    top: calc((100vw - 2 * var(--gutter)) * 0.375);
+    transform: translateY(-50%);
+  }
+  .piste-fleche[data-piste-prev]{ left: 10px; }
+  .piste-fleche[data-piste-next]{ right: 10px; }
+  /* « .piste > » et non « .piste-voie » seul : la voie EST la grille —
+     .trio, .acts — et .acts se déclare en grid plus bas dans la feuille.
+     À spécificité égale, la dernière écrite gagnait. */
+  .piste > .piste-voie{
+    display: flex; grid-template-columns: none;
+    gap: clamp(12px, 3vw, 18px);
+    overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .piste > .piste-voie::-webkit-scrollbar{ display: none; }
+  .piste > .piste-voie > *{ flex: 0 0 100%; scroll-snap-align: center; }
+}
 
 /* ------------------------------------------------------- 12b. Les chambres */
 /* Dix fiches en pont roulant : deux rangs de cinq, trois colonnes visibles.
@@ -911,22 +1207,119 @@ body.is-curtained{ overflow: hidden; }
   gap: 18px 28px; flex-wrap: wrap;
 }
 .rooms-top .head{ margin-bottom: 0; flex: 1 1 420px; }
-.rooms-nav{ display: flex; gap: 10px; flex: none; }
-.rooms-arrow{
+/* La commande vit dans le pont, mais sur grand écran elle se pose en tête de
+   section, à droite : `bottom: calc(100% + 26px)` la remonte de l'écart du
+   `stack-lg` qui sépare le titre du pont — c'est-à-dire exactement à la
+   hauteur où elle se trouvait quand elle était dans le bandeau de titre. */
+.rooms-nav{
+  display: flex; gap: 10px; flex: none;
+  position: absolute; right: 0; bottom: calc(100% + 26px); z-index: 2;
+}
+.rooms-arrow, .piste-fleche{
   width: 46px; height: 46px; border-radius: 50%; padding: 0;
   border: 1px solid rgba(255,255,255,.45); background: transparent; color: #FFFFFF;
   display: grid; place-items: center; cursor: pointer;
   transition: background .2s var(--ease), color .2s var(--ease),
               border-color .2s var(--ease), opacity .2s var(--ease);
 }
-.rooms-arrow:hover:not([disabled]){
+.rooms-arrow:hover:not([disabled]), .piste-fleche:hover:not([disabled]){
   background: #FFFFFF; border-color: #FFFFFF; color: var(--green-bg);
 }
-.rooms-arrow[disabled]{ opacity: .28; cursor: default; }
+.rooms-arrow[disabled], .piste-fleche[disabled]{ opacity: .28; cursor: default; }
 
+/* Posée sur une photographie, une pastille transparente à liseré blanc se
+   perd dès que le fond s'éclaircit. Là où les flèches passent sur l'image,
+   elles deviennent donc des pastilles blanches pleines, comme celles du
+   carrousel de la fiche de chambre. Deux fenêtres distinctes : les carrousels
+   basculent à 900 px, le pont des chambres à 760. */
+@media (max-width: 900px){
+  .piste-fleche{
+    width: 42px; height: 42px;
+    background: #FFFFFF; border-color: #FFFFFF; color: var(--brown-bg);
+    box-shadow: 0 3px 14px rgba(20,26,30,.35);
+  }
+  .piste-fleche:hover:not([disabled]){
+    background: var(--brown-bg); border-color: var(--brown-bg); color: #FFFFFF;
+  }
+  .piste-fleche[disabled]{
+    /* Au bout de la course, la pastille se vide : plus de fond, plus d'ombre,
+       il ne reste que le liseré et la flèche. La photographie se voit au
+       travers. Le contraste avec le bouton actif — blanc plein et ombre
+       portée — est immédiat, sans qu'on ait à deviner un écart d'opacité. */
+    opacity: 1;
+    background: transparent;
+    border-color: rgba(255,255,255,.55);
+    color: rgba(255,255,255,.85);
+    box-shadow: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+}
 @media (max-width: 760px){
-  .rooms-grid{ grid-template-columns: repeat(5, 76%); grid-auto-columns: 76%; }
-  .rooms-nav{ display: none; }   /* au doigt, on fait glisser */
+  .rooms-arrow{
+    width: 42px; height: 42px;
+    background: #FFFFFF; border-color: #FFFFFF; color: var(--brown-bg);
+    box-shadow: 0 3px 14px rgba(20,26,30,.35);
+  }
+  .rooms-arrow:hover:not([disabled]){
+    background: var(--brown-bg); border-color: var(--brown-bg); color: #FFFFFF;
+  }
+  /* Même état éteint que les flèches des carrousels, voir plus haut. */
+  .rooms-arrow[disabled]{
+    /* Au bout de la course, la pastille se vide : plus de fond, plus d'ombre,
+       il ne reste que le liseré et la flèche. La photographie se voit au
+       travers. Le contraste avec le bouton actif — blanc plein et ombre
+       portée — est immédiat, sans qu'on ait à deviner un écart d'opacité. */
+    opacity: 1;
+    background: transparent;
+    border-color: rgba(255,255,255,.55);
+    color: rgba(255,255,255,.85);
+    box-shadow: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+}
+
+/* Au téléphone, une fiche à la fois, posée au milieu de l'écran, et les deux
+   flèches pour passer à la suivante — celle de gauche s'allume dès qu'il y a
+   de quoi revenir. Le glissement au doigt marche toujours.
+   Le centrage tient au rembourrage : une colonne fait 72 vw, et l'on met de
+   chaque côté de la voie la moitié de ce qui reste. La fenêtre de défilement
+   vaut alors exactement une colonne, et `scroll-snap-align: center` pose
+   chaque fiche au milieu — y compris la première et la dernière, qui sans ce
+   rembourrage ne pourraient jamais atteindre le centre.
+   Tout est en vw et non en pour-cent : un pour-cent de colonne se mesure sur
+   la boîte de contenu, qu'un rembourrage en pour-cent rétrécirait à son tour. */
+@media (max-width: 760px){
+  .rooms-grid{
+    --rcol: 72vw;
+    grid-template-columns: repeat(5, var(--rcol));
+    grid-auto-columns: var(--rcol);
+    padding-inline: calc((100vw - 2 * var(--gutter) - var(--rcol)) / 2);
+  }
+  .rooms-grid > *{ scroll-snap-align: center; }
+
+  /* La case de clôture disparaît : elle existait pour combler le tiers vide
+     du second écran, et il n'y a plus de tiers quand on avance d'une fiche à
+     la fois. Elle reste sur grand écran, où ce vide, lui, existe toujours. */
+  .rcard-end{ display: none; }
+
+  /* Les deux flèches viennent se poser sur la photographie, à mi-hauteur,
+     une par bord. La bande qui les porte fait la largeur d'une fiche et se
+     centre comme elle ; 27 vw, c'est la moitié des 54 vw de la photo, qui
+     est un 4/3 dans une colonne de 72 vw. Elle ne reçoit pas le clic — seuls
+     les boutons le reçoivent — sans quoi elle couvrirait la fiche. */
+  .rooms-nav{
+    position: absolute; right: auto; bottom: auto;
+    /* À mi-hauteur du pont, c'est-à-dire sur la couture entre les deux rangs
+       de fiches — et non plus au milieu de la photographie du rang du haut. */
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 72vw; display: block; pointer-events: none; z-index: 3;
+  }
+  .rooms-arrow{
+    position: absolute; top: 50%; transform: translateY(-50%);
+    pointer-events: auto;
+  }
+  .rooms-arrow.is-prev{ left: 8px; }
+  .rooms-arrow.is-next{ right: 8px; }
 }
 
 /* ------------------------------------------------- 12b-ter. La fiche */
@@ -971,6 +1364,37 @@ body.is-curtained{ overflow: hidden; }
 @media (max-width: 820px){
   .rmodal-in{ grid-template-columns: 1fr; }
 }
+
+/* ---- La fiche sans images : la liste des traiteurs. Même coquille que les
+   fiches de chambre — même croix, même fermeture, même script — mais une
+   seule colonne, et moins large : une liste de coordonnées n'a pas besoin de
+   mille pixels. */
+.rmodal.is-plain{ width: min(660px, calc(100vw - 32px)); }
+.rmodal-in.is-single{ grid-template-columns: 1fr; }
+
+.trt-groupe h4{
+  font-family: var(--body); font-size: .72rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--ink-45);
+  margin-bottom: 14px;
+}
+.trt-liste{ list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
+/* Un bloc par prestataire : le nom, puis le lieu, puis les moyens de le
+   joindre. Le trait de séparation dit où finit l'un et où commence l'autre —
+   dans une liste de numéros, c'est ce qui manque le plus vite. */
+.trt{
+  display: flex; flex-direction: column; gap: 3px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--line-soft);
+}
+.trt:last-child{ padding-bottom: 0; border-bottom: 0; }
+.trt b{ font-size: 1rem; font-weight: 700; }
+.trt-lieu{ font-size: .86rem; color: var(--ink-70); }
+.trt-quoi{ font-size: .82rem; color: var(--ink-45); }
+.trt-liens{
+  display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 6px;
+  font-size: .86rem; color: var(--ink-70);
+}
+.trt-liens a{ font-weight: 700; color: var(--sage-deep); }
+.trt-liens a:hover{ text-decoration: underline; }
 
 /* Le détail d'une chambre : les caractéristiques en lignes étiquetées, et le
    rappel des formules encadré. Ces deux briques ont survécu à la refonte des
@@ -1040,8 +1464,21 @@ body.is-curtained{ overflow: hidden; }
               transform .2s var(--ease), opacity .2s var(--ease);
 }
 .carousel-btn:hover{ background: var(--brown-bg); color: #fff; transform: translateY(-50%) scale(1.08); }
-.carousel-btn[disabled]{ opacity: .35; cursor: default; }
-.carousel-btn[disabled]:hover{ background: #fff; color: var(--brown-bg); transform: translateY(-50%); }
+/* Au bout de la pellicule, la pastille se vide — même état que les flèches du
+   pont et des carrousels : plus de fond, plus d'ombre, il ne reste que le
+   liseré et la flèche, et la photographie se voit au travers. Le liseré est
+   ajouté ici parce que ce bouton-ci n'en a pas au repos. */
+.carousel-btn[disabled]{
+  cursor: default; opacity: 1;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.55);
+  color: rgba(255,255,255,.85);
+  box-shadow: none;
+}
+.carousel-btn[disabled]:hover{
+  background: transparent; color: rgba(255,255,255,.85);
+  transform: translateY(-50%);
+}
 .carousel-prev{ left: 12px; } .carousel-next{ right: 12px; }
 @media (max-width: 520px){ .carousel-btn{ width: 40px; height: 40px; } }
 
@@ -1199,23 +1636,28 @@ body.is-curtained{ overflow: hidden; }
    #maison (1,0,0) l'emporte sur .band-brown (0,1,0), cette règle doit
    reprendre le grain et la profondeur de la bande, sans quoi elle les
    effacerait toutes les deux en ne déclarant que le roseau. */
-/* Le roseau est un calque et non plus un fond, et il garde la même taille à
-   toutes les largeurs : un fond s'arrête au bord de sa section, et le réduire
-   pour qu'il y tienne était le contraire de ce qui est demandé. Il descend
-   donc de 360 px dans « Les chambres ».
-   L'ordre de peinture fait tout le travail : un élément positionné passe
-   au-dessus du fond de la section suivante — c'est ce qu'on veut — mais aussi
-   au-dessus de son texte, ce qu'on ne veut pas. D'où les deux coquilles
-   remontées d'un cran : le roseau à 0, les contenus à 1.
-   overflow-x: clip retient le débordement latéral sans retenir le vertical ;
-   overflow: hidden aurait bloqué les deux. */
+/* Le roseau est un calque et non un fond, et il garde la même taille à toutes
+   les largeurs. Sa base est posée sur le bas de « La maison » : il avait
+   débordé de 360 px sur « Les chambres » le temps d'un essai, le client l'a
+   fait remonter. bottom: 0, donc plus rien ne dépasse en bas.
+   Il déborde encore de 110 px à droite, pour que la touffe ne soit pas
+   plantée contre le bord : overflow-x: clip retient ce débordement-là sans
+   retenir le vertical, là où overflow: hidden aurait bloqué les deux.
+   La coquille est remontée d'un cran pour passer devant : un élément
+   positionné se peint au-dessus du texte en flux, et sans cela le roseau
+   couvrirait les images et les titres de la section. */
 #maison{ position: relative; overflow-x: clip; overflow-y: visible; }
-#maison > .shell, #chambres > .shell{ position: relative; z-index: 1; }
+#maison > .shell{ position: relative; z-index: 1; }
 .roseau{
   position: absolute; z-index: 0; pointer-events: none;
-  right: -110px; bottom: -360px;
+  right: -110px; bottom: 0;
   width: 1045px; height: 1800px;      /* le dessin fait 360 × 620 */
   background: var(--roseaux-clair) no-repeat center / contain;
+}
+/* Au téléphone il vient au milieu : collé à droite sur un écran étroit, il
+   n'en montrait qu'une tranche, et la touffe tombait hors du cadre. */
+@media (max-width: 760px){
+  .roseau{ right: auto; left: 50%; transform: translateX(-50%); }
 }
 
 /* -------------------------------------------------------- 13. Calendrier */
@@ -1265,6 +1707,11 @@ body.is-curtained{ overflow: hidden; }
 .choice input:focus-visible + span{ outline: 2px solid var(--sage-deep); outline-offset: 2px; }
 .choice span:hover{ border-color: var(--sage); }
 
+/* La pastille d'avis est centrée sur la colonne, donc sur la carte qui la
+   suit : collée à gauche sous une liste d'étiquettes, elle avait l'air d'une
+   ligne de plus au lieu d'un bouton. */
+.contact-rating{ display: flex; justify-content: center; }
+
 .contact-list{ list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
 .contact-list li{ display: flex; gap: 16px; padding-block: 15px; border-bottom: 1px solid var(--line-soft); align-items: flex-start; }
 .contact-list li:last-child{ border-bottom: 0; }
@@ -1295,7 +1742,34 @@ body.is-curtained{ overflow: hidden; }
   border-top: 1px solid var(--line);
 }
 .dock .btn{ flex: 1; padding-block: 13px; }
-@media (max-width: 760px){ .dock{ display: flex; } body{ padding-bottom: 76px; } }
+/* Les deux boutons virent au marron de la charte quand on les touche, comme
+   l'appel principal du bandeau et celui du menu — l'ardoise du survol par
+   défaut ne renvoyait à rien. « :active » accompagne « :hover » parce que la
+   barre ne paraît qu'au téléphone : un écran tactile n'a pas de survol, et
+   sans lui la couleur ne se verrait jamais là où elle est demandée. */
+.dock .btn-primary:hover, .dock .btn-primary:active{
+  background: var(--brown-bg);
+  box-shadow: 0 10px 26px -10px rgba(75,59,51,.8);
+}
+.dock .btn-outline:hover, .dock .btn-outline:active{
+  background: var(--brown-bg); border-color: var(--brown-bg); color: #fff;
+}
+/* Elle n'apparaît qu'une fois le bandeau passé : posée dessus, elle couvrait
+   le bas de la photographie et répétait les deux boutons qui s'y trouvent
+   déjà. Le seuil est calculé par le script, qui pose `is-on` — voir la
+   section « barre d'action » de site.js. Elle glisse au lieu de surgir. */
+@media (max-width: 760px){
+  .dock{
+    display: flex;
+    transform: translateY(130%);
+    transition: transform .32s var(--ease);
+  }
+  .dock.is-on{ transform: none; }
+  body{ padding-bottom: 76px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .dock{ transition: none; }
+}
 
 /* -------------------------------------------------------- 16. Mouvement */
 .js .reveal{ opacity: 0; transform: translateY(16px); }

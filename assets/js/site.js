@@ -111,6 +111,35 @@
     onScroll();
   }
 
+  /* --------------------------------- barre d'action, après le bandeau */
+  /* Au téléphone, « Appeler » et « Réserver » ne paraissent qu'une fois le
+     bandeau passé : posée dessus, la barre couvrait le bas de la photographie
+     et doublait les deux boutons qui s'y trouvent déjà.
+
+     Le seuil est la hauteur du bandeau moins un peu : on la relit à chaque
+     redimensionnement, la barre d'adresse du téléphone la fait varier. Pas
+     d'IntersectionObserver ici — l'écouteur de défilement est déjà posé
+     au-dessus pour l'en-tête, autant s'en servir. */
+  var dock = $(".dock");
+  var heroBloc = $(".hero");
+  if (dock && heroBloc) {
+    var dockOn = false;
+    var seuil = 0;
+    var mesurer = function () { seuil = Math.max(120, heroBloc.offsetHeight - 120); };
+    var peindreDock = function () {
+      var should = window.scrollY > seuil;
+      if (should !== dockOn) {
+        dockOn = should;
+        dock.classList.toggle("is-on", dockOn);
+      }
+    };
+    mesurer();
+    addEventListener("scroll", peindreDock, { passive: true });
+    addEventListener("resize", function () { mesurer(); peindreDock(); }, { passive: true });
+    addEventListener("load", function () { mesurer(); peindreDock(); });
+    peindreDock();
+  }
+
   /* ------------------------------------------------- menu mobile */
   var burger = $(".burger");
   var nav = $(".nav");
@@ -120,6 +149,13 @@
     if (!burger || !nav) return;
     burger.setAttribute("aria-expanded", String(open));
     nav.classList.toggle("is-open", open);
+    /* Le panneau du menu est un enfant de l'en-tête, et l'en-tête collé porte
+       un backdrop-filter. Un élément filtré devient le bloc conteneur de ses
+       descendants en position fixe : le panneau, posé en inset: 0, remplissait
+       alors l'EN-TÊTE — 144 px de haut — au lieu de l'écran. Cette classe
+       éteint le filtre le temps que le menu est ouvert ; il n'a de toute façon
+       plus rien à flouter, le panneau blanc étant devant. */
+    document.body.classList.toggle("menu-ouvert", open);
     if (scrim) scrim.classList.toggle("is-on", open);
     document.body.style.overflow = open ? "hidden" : "";
     if (open) {
@@ -265,12 +301,40 @@
       if (opener) opener.focus();
     }
 
-    $$(".gallery button").forEach(function (btn, i) {
-      items.push({
-        full: btn.getAttribute("data-full"),
-        alt: btn.getAttribute("data-alt") || ""
+    /* La visionneuse sert deux choses : la mosaïque de la galerie, qui forme
+       un seul lot, et les vignettes de « La maison » et des extérieurs, qui
+       ont chacune le leur. Le lot courant remplace `items` à l'ouverture.
+
+       Le sélecteur visait « .gallery button » alors que le balisage dit
+       « .mosaic » : la galerie ne s'agrandissait donc pas du tout, et ce
+       depuis le premier jour. Corrigé ici. */
+    function ouvrir(liste, i, depuis) {
+      if (!liste || !liste.length) return;
+      items = liste;
+      open(i, depuis);
+    }
+
+    var mosaique = $$(".mosaic button");
+    var lotGalerie = mosaique.map(function (btn) {
+      return { full: btn.getAttribute("data-full"), alt: btn.getAttribute("data-alt") || "" };
+    });
+    mosaique.forEach(function (btn, i) {
+      btn.addEventListener("click", function () { ouvrir(lotGalerie, i, btn); });
+    });
+
+    /* Les autres lots voyagent en JSON plutôt qu'en balisage : leurs vues ne
+       sont pas des vignettes, elles n'ont aucune raison d'être dans le DOM ni
+       d'être chargées avant qu'on les demande. */
+    var lots = {};
+    var ilot = $("[data-lots]");
+    if (ilot) { try { lots = JSON.parse(ilot.textContent) || {}; } catch (e) { lots = {}; } }
+
+    $$("[data-lot]").forEach(function (prise) {
+      prise.addEventListener("click", function () {
+        var brut = lots[prise.getAttribute("data-lot")];
+        if (!brut) return;
+        ouvrir(brut.map(function (x) { return { full: x.u, alt: x.a }; }), 0, prise);
       });
-      btn.addEventListener("click", function () { open(i, btn); });
     });
 
     var closeBtn = $(".lb-close", lb);
@@ -363,16 +427,21 @@
   });
 
 
-  /* ------------------------------------ chambres : pont roulant et fiches */
-  /* Le pont fait défiler d'une pleine largeur : les trois colonnes visibles
-     cèdent la place aux suivantes, et le défilement s'arrête au bout. */
-  var deck = $("[data-rooms-track]");
-  if (deck) {
-    var deckPrev = $("[data-rooms-prev]");
-    var deckNext = $("[data-rooms-next]");
+  /* ------------------------------------------- ponts roulants et fiches */
+  /* Un seul pilote pour trois rangées : le pont des chambres, le carrousel
+     des extérieurs et celui des activités. Toutes trois sont des boîtes qui
+     défilent en x avec accroche ; seul le nombre de colonnes visibles change,
+     et il se mesure au lieu de se déclarer.
 
-    /* Le pas d'une colonne, mesuré sur les deux premières fiches : il suit la
-       feuille de style sans la répéter ici. */
+     Sur grand écran, extérieurs et activités ne défilent pas du tout — la
+     feuille de style leur rend leur grille et éteint les flèches. Le pilote
+     tourne quand même : il ne trouve alors rien à faire, scrollWidth valant
+     clientWidth, et les deux flèches restent éteintes. */
+  function pont(deck, deckPrev, deckNext) {
+    if (!deck) return;
+
+    /* Le pas d'une colonne, mesuré sur les deux premières cellules : il suit
+       la feuille de style sans la répéter ici. */
     var deckPas = function () {
       var a = deck.children[0], b = deck.children[1];
       var pas = a && b ? Math.abs(b.offsetLeft - a.offsetLeft) : 0;
@@ -410,6 +479,12 @@
     addEventListener("load", deckPaint);
     deckPaint();
   }
+
+  pont($("[data-rooms-track]"), $("[data-rooms-prev]"), $("[data-rooms-next]"));
+  $$("[data-piste]").forEach(function (voie) {
+    var cadre = voie.parentElement;
+    pont(voie, $("[data-piste-prev]", cadre), $("[data-piste-next]", cadre));
+  });
 
   /* La fiche d'une chambre. <dialog> apporte la touche Échap, le piège à
      focus et le fond assombri ; il reste à verrouiller le défilement de la
